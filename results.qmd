@@ -1,0 +1,306 @@
+# Results {.unnumbered}
+
+## Participant Characteristics
+
+In total, 3,222 individuals responded to the survey. Participants who did not opt out and completed at least 50% of the spiritual abuse item pool were considered complete responders and included in the study (N = 3,219). Non-responders included those who responded to less than half of the items (N=3).
+
+Almost all participants (N = 3,064) answered demographics items, and the results are presented in @tbl-DemsTable below. Compared to the general U.S. population, the sample was largely white (86%) and Protestant (57%). The average respondent saw themselves as slightly theologically liberal (M = 4.5, range 1-7). About 4 in 5 identified as straight (82%), and most were raised in a Christian home (87%).
+
+```{r}
+#| echo: false
+#| label: tbl-DemsTable
+#| tbl-cap: "Participant Characteristics"
+#| verbose: false
+#| message: false
+#| warning: false
+
+source("code/Build-Demographic-Table.R")
+suppressPackageStartupMessages(library(kableExtra))
+dems.tbl %>%
+  kableExtra::kbl(align = "cccccccccc", digits = 2, booktabs = TRUE) %>%
+  kable_styling(latex_options = c("scale_down","hold_position"))
+```
+
+## Initial Item Analysis
+
+In @tbl-ClassicalItemTable we report classical statistics for the 66 SHAS items. We sorted the items by their mean. We flagged six items due to extreme values of skew (less than -2 or greater than +2) or kurtosis (less than -7 or greater than +7) and item-total correlations below 0.50. These included items EQ17, EQ27, EQ41, EQ46, EQ55, and EQ60. Category response proportions show that most people responded "Never" to these items. Thus, because these items do not apply to the vast majority of people in this population, we removed them from the item pool. This reduced the pool from 66 to 59 items.
+
+```{r}
+#| label: tbl-ClassicalItemTable
+#| tbl-cap: "Classical Item Statistics"
+#| echo: false
+#| verbose: false
+#| message: false
+#| warning: false
+
+source("code/Build-Classical-Item-Stats-Table.R")
+suppressPackageStartupMessages(library(kableExtra))
+item.table2 %>%
+   kableExtra::kbl(digits=2, align = "ccccccccc", longtable = T, booktabs = T) %>%
+   kable_styling(latex_options = c("repeat_header")) %>%
+   add_header_above(c(" ", "Category response proportion" = 5, " " = 7)) %>%
+   column_spec(1, width="2cm")
+```
+
+```{r}
+#| echo: false
+
+# SAVE NEW ITEM FILE
+all <- read.csv("data/all.csv")
+items2 <- all[ ,1:67]
+items2 <- items2[,-1]
+items2 <- items2[,-c(5,15,28,33,41,46)]
+write.csv(items2,"data/items2.csv")
+```
+
+## Unidimensionality and Local Independence
+
+### Principal Components
+
+We first analyzed the principal components in the 59 SHAS items. As shown in @fig-pca, the first component was large, accounting for nearly 30% of the variance. The second, third, and fourth components accounted for 4%, 3%, and 2% of the variance, respectively. The ratio of the eigenvalue of the first (largest) component to that of the second is approximately 13.
+
+```{r}
+#| label: fig-pca
+#| fig-cap: "Principal Components"
+#| echo: false
+#| verbose: false
+#| message: false
+#| warning: false
+source("code/IRT-Principal-Components.R")
+plot(pca,type="lines", main="") # scree plot
+```
+
+### Proportion of Variance
+
+Second, we estimated a unidimensional Rasch model on dichotomized responses to the 59 SHAS items and saved the residuals of the person parameters. We calculated the variance in the observed item responses and the variance of the residuals. @Reckase1979 suggests that the unidimensionality assumption is safely met if the Rasch model explains 20% of the variance in the data. In this case, the proportion of variance in the SHAS item data explained by the Rasch model was .23. Thus, the SHAS data meet this criterion.
+
+```{r}
+#| label: Rasch-proportion-variance
+#| echo: false
+#| verbose: false
+#| message: false
+#| warning: false
+source("code/IRT-Proportion-of-Variance.R")
+```
+
+### Principal Component Analysis of Residuals (PCAR)
+
+Next, we examined the principal components of the correlations among residuals of the Rasch analysis. The premise is that once the Rasch model has been estimated, correlations among the item residuals should be minimal. Linacre () suggests that contrasts with eigenvalues of 2.0 or below can be considered noise. In @fig-pcar, our PCAR analysis found only one contrast that rose above that 2.0 threshold.
+
+```{r}
+#| label: fig-pcar 
+#| fig-cap: "Contrasts from PCA of Standardized Residual Correlations"
+#| echo: false
+#| verbose: false
+source("code/IRT-PCAR.R")
+plot(contrasts, ylab = "Eigenvalues for Contrasts", xlab = "Contrast Number")
+```
+
+### Q3
+
+Finally, we calculated the Q3 statistic @Yen1984 to examine correlations among item residuals, the premise being that the latent trait should account for so much common variance in the item responses that any net correlations among the items should be weak. The Q3 statistic index criteria are that the raw residual correlation between pairs of items should never exceed 0.10 (Marais & Andrich, 2008). Of the 1,711 item pairs, the mean correlation was -0.017 with a standard deviation of 0.035. Thus, most of the residual correlations among items were very weak. @fig-q3 plots the matrix of correlations between item residuals. Each square depicts a correlation. The squares are shaded in grey with the lightest shade indicating the weakest correlations. As hoped, the vast majority of squares are very light, indicating weak correlations among the item residuals.
+
+```{r}
+#| label: fig-q3
+#| fig-cap: "Correlation Matrix of Item Residuals"
+#| message: false
+#| warning: false
+#| echo: false
+source("code/IRT-Q3.R")
+I <- ncol(q3.data)
+image( 1:I, 1:I, mod.q3$q3.matrix, col=grey( 1 - (0:32)/32), xlab = "Item", ylab = "Item")
+# abline(v=c(53,66)) # borders for testlets
+# abline(h=c(53,66))
+```
+
+## Rasch Rating Scale Analysis
+
+We used the Rasch Rating Scale Model (RSM) [@Andrich1978] to examine the SHAS item pool. The RSM is a Rasch model [@Rasch1960] that combines (or "calibrates") information from items with information from persons to arrive at a common scale for measuring both an item's and a person's level of a latent trait, in this case, severity of spiritual abuse. This scale is expressed in logits (log odds units). Whereas the Rasch model was designed for use with dichotomous items (0 = incorrect response, 1 = correct response), the RSM is an extension for use with polytomous items based on rating scales such as Likert scales of agreement [@EmbretsonReise2000].
+
+We also use different language from conventional IRT analyses. Because IRT was developed to measure student achievement, IRT statistics for both items and persons tend to use language of "ability" and "difficulty." For our purpose to measure a psychological trait such as the experience of spiritual abuse, we chose instead to adopt language of "severity." We used person parameters and scale scores to represent participants' severity of abuse and to describe item parameters as severity parameters.
+
+library(tidyverse) library(dplyr) library(tidyr) library(knitr) library(kableExtra) library(stats4) library(lattice) library(mirt) library(WrightMap)
+
+The RSM estimates the probability of a person choosing among several response options (i.e. Never, Once or twice) given two values: the severity of abuse represented by the item, and the person's severity of the latent trait (spiritual abuse). The increase in severity involved in choosing between two response categories is called a "step parameter". The RSM makes two assumptions of the response categories. One is that all items use the same rating scale. The other is that the same response categories distinguish persons equally well for each item. For these reasons the RSM estimates the same step parameters for all the items.
+
+To convey this information visually, @fig-RM-plot1 and @fig-RM-plot2 are plots of the category response functions of two items. In both, the horizontal axis is the scale of spiritual abuse expressed in logits ranging from -2 to +2. The vertical axis is the probability of selecting a given response (i.e., "Always") given the person's overall severity of spiritual abuse. The blue line is the probability of selecting Category 1 ("Never") for persons with less severe spiritual abuse. Persons with less severe spiritual abuse are most likely to select "Never" while those with more severe abuse are most likely to select "Always." Between these two extremes are persons with more moderate or average spiritual abuse. These persons are more likely to Categories 3 or 4, "Sometimes" or "Often", respectively. Both plots show curves that display identical step parameters.
+
+```{r}
+#| label: fig-RM-plot1
+#| fig-cap: "Category Response Plots"
+#| echo: false
+#| message: false
+#| warning: false
+
+source("code/IRT-Estimate-RSM.R")
+plot(mod_rsm2, type = "items", items = 9, export = F, verbose = FALSE, message = FALSE, progress = FALSE)
+```
+
+```{r}
+#| label: fig-RM-plot2
+#| fig-cap: "Category Response Plots"
+#| echo: false
+#| message: false
+#| warning: false
+
+source("code/IRT-Estimate-RSM.R")
+plot(mod_rsm2, type = "items", items = 30, export = F, verbose = FALSE, message = FALSE, progress = FALSE)
+```
+
+These plots point out a step reversal between "Never" and "Once or twice". Persons reporting the least severe spiritual abuse were most likely to report "Never" to this prompt of medical care being postponed or withheld for religious reasons. Persons farther along the scale who have experienced "average" average spiritual abuse should be more likely to report "Once or twice" but were still more likely to report "Never". This finding suggests the "Never" and "Once or twice" categories might be collapsed.
+
+### Item Severity Parameters and Fit Statistics
+
+@tbl-RSM-item-tbl reports item parameters and fit statistics for the SHAS items. The first column, xsi, reports the severity parameter of the item, and we have sorted the items by this value from least to most severe to facilitate comparison between items. @tbl-RSM-item-tbl also reports fit statistics for the items. These statistics reflect how closely the observed patterns of item responses fit the patterns of item responses predicted by the RSM. These fit statistics are chi-square statistics which examine the cumulative difference the observed pattern of item responses and the pattern of item responses that the model would expect.
+
+Two fit statistics commonly used in IRT models are the infit mean square and the outfit mean square [@BondFox2015]. The infit statistic places greater emphasis on unexpected responses that are close to the persons and item location. The outfit is sensitive to unexpected responses that are far from the location. The expected value of infit or outfit for each item is 1.0, with a range of acceptable values ranging from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit between items and the model. All but one of the 60 items had infit and outfit statistics within the acceptable range.
+
+```{r}
+#| label: tbl-RSM-item-tbl
+#| tbl-cap: "Estimated Item Parameters for the Rating Scale Model and Item Chi-Square Fit Statistics"
+#| echo: false
+#| message: false
+#| warning: false
+
+source("code/IRT-Build-RSM-Item-Table.R")
+suppressPackageStartupMessages(library(kableExtra))
+items.tbl.rsm %>%
+  kbl(align = "cccc", longtable = T, booktabs = T, digits = 2) %>%
+  kable_styling(latex_options = "repeat_header") %>%
+  add_header_above(c(" " = 2, "Item Parameters" = 2, "Fit Statistics" = 2))  %>%
+  column_spec(1, width="11cm")
+```
+
+```{r}
+#| label: fig-RSM-item-histogram
+#| fig-cap: "Distribution of Item Severity Parameters"
+#| echo: false
+#| warning: false
+#| message: false
+
+source("code/IRT-Build-RSM-Item-Table.R")
+# all
+all <- items.tbl.rsm$xsi
+screen <- subset(items.tbl.rsm$xsi, items.tbl.rsm$screening == '*')
+control <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'controlling leadership')
+maintain <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'maintain system')
+distress <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'internal distress')
+violence <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'spiritual violence')
+god <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'harmful God-image')
+x <- list("Controlling leadership"=control,
+          "Maintain system"=maintain,
+          "Internal distress"=distress,
+          "Spiritual violence"=violence,
+          "Harmful God-image"=god,
+          "Screening items"=screen,
+          "All items"=all)
+
+stripchart(x,
+main="",
+xlab="Severity of Spiritual Abuse",
+# ylab="Item set",
+method="jitter",
+jitter = 0.25,
+col=c("navy","pink","blue","green","orange","red","grey"),
+pch=18,
+xlim = c(-.5,2),
+cex.lab = .7,
+cex.axis = .7,
+las = 2
+)
+# abline(v=0)
+```
+
+### Reliability
+
+The RSM expresses internal consistency reliability as Rasch person separation. Based on Table X, the SHAS has a high Rasch person separation reliability value of .963, indicating that the estimated RSM scale discriminated well between persons with varying severity of spiritual abuse.
+
+The SHAS also has a high Rasch item separation reliability with Rel = .XX, χ2 (XX) = XXXX.X, p \< .XX, implying that the items have a good spread in terms of item ordering and hierarchy.
+
+```{r}
+#| label: RSM-Item-Reliability
+#| echo: false
+#| warning: false
+#| message: false
+source("Code/IRT-RSM-Item-Separation-Reliability.R")
+```
+
+### Item-Person Map
+
+@fig-RSM-WrightMap displays an item-person map (also called a "Wright map") that shows the item severities of the SHAS items and the person severities for each person who completed the survey. All these severities are estimated in logits (log odds units) as the unit of measures. This means the higher the logit value for an item is, the less likely it was for a person to endorse that particular item. On the other hand, higher logit values for each person indicate more severe spiritual abuse. On the variable map, the mean item severity is constrained to be 0.00 with person severities being relative to that mean item severity While column 1 shows the latent continuum in terms of logit values as the unit of measurement underlying the SHAS, columns 2 and 3 represent the severities of the people and the items.
+
+@fig-RSM-WrightMap shows good overlap between the person trait and item severity as evidenced by the match between the mean of the person severity (M = − 0.58) and the mean of the item severity (M = 0.00). This suggests that the majority of the items were appropriate for the sample. While person severity measures range from X.XX logits to − X.XX logits (M = − 0.XX, SD = 0.XX, N = XXXX), the item severities range from X.XX logits to − X.XX logits (M = X.XX, SD = 0.XX, N = XXXX). The item representing the most severe spiritual abuse for participants is Item X, "I feel ... XXX" with the severity at X.XX logits (also reported in Appendix Table 2). By contrast the item representing the least severe spiritual abuse is item XX, "I would ...", with − 1.08 logits.
+
+```{r}
+#| label: fig-RSM-WrightMap
+#| fig-cap: "Item-Person Map"
+#| echo: false
+#| warning: false
+#| message: false
+
+source("code/IRT-Estimate-RSM.R")
+suppressPackageStartupMessages(library(WrightMap))
+# tthresh.poly <- tam.threshold(mod_rsm)
+IRT.WrightMap(mod_rsm, dim.names = "", dim.color = 'red', item.side = itemModern, label.items.rows = 1, label.items.srt = 90, thr.sym.cex=0.4, show.thr.lab=FALSE, label.items.cex = 0.4, min.logit.pad = 0.25, max.logit.pad = 0.25, item.prop = .8, vertLines = TRUE, main="") 
+
+# IRT.WrightMap(mod_rsm, show.thr.lab=FALSE)
+# wrightMap(mod_rsm, tthresh.poly)
+```
+
+### Model-Data Fit
+
+To assess the overall fit of the RSM to the SHAS item response data, we use two statistics. The first is the Root Mean Square Error of Approximation (RMSEA). The suggested cutoff for RMSEA is .06. The second is the CFI. The suggested cutoff for the CFI is .95. These fit statistics are presented in @tbl-RSM-model-fit.
+
+```{r}
+#| label: tbl-RSM-model-fit
+#| tbl-cap: "RSM Model Fit"
+#| echo: false
+#| warning: false
+#| message: false
+
+# tam.fit(mod_rsm)
+
+source("code/IRT-Estimate-RSM.R")
+logLik(mod_rsm)
+```
+
+The obtained RMSEA value of .09 (95% CI\[.092, .093\]) exceeds the cutoff of .06. The CFI of .953 meets the recommended .95 threshold. Together these statistics evidence that the RSM fits the SHAS items.
+
+## DIF Analysis
+
+Differential item functioning (DIF) examines how an item functions differently for people of equal standing on the trait. In this case, we conducted DIF analysis of the SHAS items to examine item bias by gender, and age, and race. \[We applied logistic ordinal regression with IRT scoring. \[We used the Chi-squared likelihood-ratio statistic as the initial DIF detection criteria (alpha \< 0.01) and a cut-off of McFadden pseudo R2Δ ≥ 0.02 in model comparisons to determine substantial DIF, a reasonable threshold used in the development of self-reported health outcomes.\]
+
+```{r}
+#| label: fig-gender-DIF
+#| fig-cap: "Gender DIF"
+#| echo: false
+#| warning: false
+#| message: false
+#| verbose: false
+
+source("code/IRT-DIF-Run-Gender-DIF.R")
+plot(Gender.DIF, labels = c("Cis Male","Cis Female"))
+```
+
+In this analysis, we examined the degree to which there was evidence of uniform differential item functioning (DIF) between two subgroups of participants (group 1 and group 2). As a first step we examined item severity estimates and standard errors specific to each subgroup using the Rating Scale Model @Andrich1978. We estimated item severity for the two subgroups using a combined analysis of both subgroups and then estimating the group-specific item severities and standard errors are shown in Table X.
+
+To examine the differences in item severity between subgroups, we calculated standardized differences following Wright and Masters (1982) as follows:
+
+\[equation\]
+
+where\
+z is the standardized difference, d1 is the item severity specific to Subgroup 1, d2 is the item severity specific to Subgroup 2,\
+s e 2 1 is the standard error of the item severity specific to Subgroup 1, and\
+s e 2 2 is the standard error of the item severity specific to Subgroup 2. Using the formulation of the z statistic, higher values of z indicate higher item locations (more-severe to endorse) for Subgroup 1 compared to Subgroup 2.
+
+Figure X shows a plot of the z-statistics for the four items; these values are also presented numerically in Table X. In the figure, the x-axis shows the item identification numbers, and the y-axis shows the value of the z-statistic. Boundaries at +2 and -2 are indicated using dashed horizontal lines to highlight statistically significant differences in item severity between subgroups. Examination of these results indicates that the items were not significantly different in severity between the two subgroups. In addition, there were both positive and negative z statistics, indicating that although the differences in item severity were not significant, there were some items that were easier to endorse for Subgroup 1 and others that were easier to endorse for Subgroup 2.
+
+Figure 1: Plot of Standardized Differences for Items between Subgroups
+
+To further explore the differences in item severity between the two subgroups, Figure 2 shows a scatterplot of the item locations between the two subgroups. In the plot, the item severity for Subgroup 1 is shown on the x-axis, and the item severity for Subgroup 2 is shown on the y-axis. Individual items are indicated using open circle plotting symbols. A solid identity line is included to highlight deviations from invariant item severities between the two groups: Points that fall below this line indicate that items were easier to endorse (lower item measures) for Subgroup 2, and points that fall above the line indicate that items were easier to endorse (lower item measures) for Subgroup 1. Dashed lines are also included to indicate a 95% confidence interval for the difference between the item measures, following Luppescu (1995).
+
+Figure 2: Scatterplot of Subgroup-Specific Item Severities
+
+Finally, Figure 3 is a bar plot that illustrates the direction and magnitude of the differences in item severities between subgroups. In the plot, each bar represents the difference in severity between subgroups for an individual item, ordered by the item sequence in the survey. Bars that point to the left of the plot indicate that the item was easier to endorse for Subgroup 1, and bars that point to the right of the plot indicate that the item was easier to endorse for Subgroup 2. Dashed vertical lines are plotted that show values of +0.5 and -0.5 logits as an indicator of substantial differences in item severity between subgroups.
+
+Figure 3: Bar Plot of Differences In Item Severity Between Subgroups

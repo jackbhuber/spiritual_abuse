@@ -1,0 +1,73 @@
+
+```{r, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(comment = "", warning = FALSE, echo = FALSE,  message = FALSE, tidy.opts=list(width.cutoff=60), tidy = TRUE)
+knitr::opts_knit$set(verbose = FALSE)
+```
+
+## Generalized Partial Credit Model (GPCM)
+
+The third model, the Generalized Partial Credit Model (GPCM) is an extension of the Partial Credit Model. The extension is that the GPCM allows the item discrimination parameters to vary.
+
+```{r gpcm-run}
+# ESTIMATE GPCM MODEL
+library(knitr)
+library(kableExtra)
+library(stats4)
+library(lattice)
+library(mirt)
+items <- read.csv("data/items_l.csv")
+source("code/ApplyItemLabels.R")
+model.gpcm <- 'GENERALIZED PARTIAL CREDIT MODEL = 1-66'
+results.gpcm <- mirt(data=items, model=model.gpcm, itemtype="gpcm", technical = list(NCYCLES = 10000), verbose=FALSE) # estimate model
+```
+
+```{r gpcm-item-stats}
+# GET ITEM PARAMETERS
+coef.gpcm <- coef(results.gpcm, IRTpars=TRUE, simplify=TRUE)
+item.pars.gpcm <- as.data.frame(coef.gpcm$items)
+
+# ITEM FIT
+item.fits.gpcm <- as.data.frame(mirt::itemfit(results.gpcm, 'infit'))
+item.fits.gpcm <- item.fits.gpcm[,-1]
+items.tbl.gpcm <- cbind(item.pars.gpcm,item.fits.gpcm)
+```
+
+```{r gpcm-item-tbl}
+items.tbl.gpcm %>%
+  kable(digits = 3, align = "ccccccccc", caption = 'Generalized Partial Credit Model Item Parameters and Fit Statistics') %>%
+  kable_styling(bootstrap_options = "condensed", font_size = 12, fixed_thead = T)
+```
+
+Table \@ref(tab:gpcm-item-tbl) reports the item parameters estimated by the GPCM. Now the (a) reports the discrimination parameters which vary by item. These parameters suggest that the items vary considerably in how well they discriminate between examinees who have been exposed to more or less spiritual abuse. Most of the items have reversals of the first two response categories ("Never" and "Once or Twice"), and some of these step parameters have very large values.
+
+The following plots illustrate three items with very different sets of option characteristic curves. The first illustrates the intended pattern of ordered thresholds. The second and third items show pronounced reversals. 
+
+```{r gpcm-item-plots, fig.cap='Option Characteristic Curves'}
+# PCM ITEM PLOTS
+library(directlabels)
+a <- plot(results.gpcm, type = 'trace', which.items = c(28,2,49),
+     main = "", par.settings = simpleTheme(lty=1:4,lwd=2),
+     auto.key=list(points=FALSE,lines=TRUE, columns=4))
+direct.label(a, 'top.points')
+```
+
+Figure \@ref(fig:gpcm-item-plots), for Item 63 - "Shamed by pastor/group for raising questions or concerns" shows the intended pattern of responses. Examinees who had experienced less lifetime exposure to spiritual abuse were most likely to select P1: "Never." Those who had experienced a little more were more likely to select P2: "Once or twice." And so on. On this item the response categories functioned as intended to sort examinees on the basis of lifetime exposure to spiritual abuse.
+
+The item fit statistics suggest a good fit of the GPCM. No items have infit or outfit values beyond the acceptable range from 0.5 to 1.5.
+
+```{r gpcm-model-fit}
+# MODEL FIT
+gpcm.model.fit <- as.data.frame(M2(results.gpcm, type = "C2", calcNULL = FALSE))
+row.names(gpcm.model.fit)[row.names(gpcm.model.fit) == "stats"] <- "GPCM"
+gpcm.model.fit %>%
+  kable(digits = 3, align = "ccccccccc", caption = "Generalized Partial Credit Model Fit") %>%
+  kable_styling(bootstrap_options = "condensed", font_size = 12, fixed_thead = T)
+```
+
+Model fit statistics are reported in Table \@ref(tab:gpcm-model-fit). The obtained RMSEA value = .078 (95% CI[.078, .079]) and SRMSR value = .064 suggest that data do not fit the model reasonably very well using suggested cutoff values of RMSEA <= .06 and SRMSR <= .08 as suggested guidelines for assessing fit. The CFI = .97 exceeded the recommended .95 threshold.
+
+```{r}
+save(results.gpcm, file = "data/results.gpcm.RData")
+write.csv(gpcm.model.fit, "data/gpcm.model.fit.csv")
+rm(list=ls())
+```

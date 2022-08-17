@@ -1,0 +1,33 @@
+
+```{r, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(comment = "", warning = FALSE, echo = FALSE,  message = FALSE, tidy.opts=list(width.cutoff=60), tidy = TRUE)
+knitr::opts_knit$set(verbose = FALSE)
+```
+
+#### Local Independence
+
+To check the assumption of local independence, we used the Q3 statistic (Yen, 1984). The Q3 statistic index criteria are that the raw residual correlation between pairs of items should never exceed 0.10 (Marais & Andrich, 2008).
+
+```{r q3, echo=FALSE}
+# Q3 STATISTIC
+library(sirt)
+items <- read.csv("data/ditems_l.csv") # grab the data
+mod <- sirt::rasch.mml2(items, progress = FALSE) # estimate the Rasch model
+mod.wle <- sirt::wle.rasch(dat=items, b=mod$item$b) # estimate WLEs
+mod.q3 <- sirt::Q3(dat=items, theta=mod.wle$theta, b=mod$item$b ) # estimate Q3
+```
+
+```{r q3-plot, fig.cap='Correlations matrix of Item Residuals'}
+# plot Q3 statistics
+I <- ncol(items)
+image( 1:I, 1:I, mod.q3$q3.matrix, col=gray( 1 - (0:32)/32),
+       xlab="Item", ylab="Item")
+abline(v=c(53,66)) # borders for testlets
+abline(h=c(53,66))
+```
+
+Figure \@ref(fig:q3-plot) is a plot of the matrix of correlations between item residuals. Each square depicts a correlation. The squares are shaded in grey with the lightest shade indicating the weakest correlations. As hoped, the vast majority of squares are very light, indicating weak correlations among the item residuals.
+
+```{r}
+rm(list = ls())
+```
