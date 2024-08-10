@@ -47,7 +47,7 @@ rm(all,descriptives,catfreqs,a,item.totals,item.table)
 # RENDER CTT ITEM STATS TABLE
 library(kableExtra)
 item.table2 %>%
-   kbl(digits=2, align = "ccccccccc", longtable = T, booktabs = T) %>%
+   kbl(digits=2, align = "cccccccccccc", longtable = T, booktabs = T) %>%
    kable_styling(latex_options = c("repeat_header")) %>%
    add_header_above(c(" ", "Category response proportion" = 5, " " = 7)) %>%
    column_spec(1, width="2cm")

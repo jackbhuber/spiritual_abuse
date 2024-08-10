@@ -4,21 +4,72 @@
 
 In total, 3,222 individuals responded to the survey. Participants who did not opt out and completed at least 50% of the spiritual abuse item pool were considered complete responders and included in the study (N = 3,219). Non-responders included those who responded to less than half of the items (N=3).
 
-Almost all participants (N = 3,064) answered demographics items, and the results are presented in @tbl-DemsTable below. Compared to the general U.S. population, the sample was largely white (86%) and Protestant (57%). The average respondent saw themselves as slightly theologically liberal (M = 4.5, range 1-7). About 4 in 5 identified as straight (82%), and most were raised in a Christian home (87%).
+Most of the participants responded to the demographics items, and we present the results of these items in @tbl-DemsTable. Most of the sample (76%) was adults between the ages of 25 and 56, with Millennials (Ages 25-40) comprising nearly 56% of the sample, followed by Generation X (Ages 41-56) comprising 21%. Half the sample was cisgender female (51%) and 41% was cisgender male. The sample was also predominantly white (87%) and straight (82%).
 
 ```{r}
-#| echo: false
 #| label: tbl-DemsTable
-#| tbl-cap: "Participant Characteristics"
+#| tbl-cap: "Demographic Characteristics"
+#| echo: false
 #| verbose: false
 #| message: false
 #| warning: false
 
 source("code/Build-Demographic-Table.R")
 suppressPackageStartupMessages(library(kableExtra))
-dems.tbl %>%
-  kableExtra::kbl(align = "cccccccccc", digits = 2, booktabs = TRUE) %>%
-  kable_styling(latex_options = c("scale_down","hold_position"))
+kbl(dems.tbl, format.args = list(big.mark = ",")) %>%
+  kable_paper(full_width = T) %>%
+  pack_rows("Generation",1,7) %>%
+  pack_rows("Gender",8,15) %>%
+  pack_rows("Race",16,24) %>%
+  pack_rows("Sexual Orientation",25,32)
+
+#dems.tbl %>%
+#  kableExtra::kbl(align = "cccccccccc", digits = 2, booktabs = TRUE) %>%
+#  kable_styling(latex_options = c("scale_down","hold_position"))
+```
+
+The survey also included several items asking participants about their religious background and current identification and beliefs. We report the results of these religious characteristics in @tbl-ChristTable. Most of the sample (87%) was raised in a Christian home. Over half (56%) now self-identify as Protestant, followed by a quarter who do not identify with a religious tradition (16% "Nothing in particular" and 10% "Agnostic"). Over 60% view the Bible as divinely inspired if not to be interpreted literally.
+
+```{r}
+#| label: tbl-ChristTable
+#| tbl-cap: "Religious Characteristics"
+#| echo: false
+#| verbose: false
+#| message: false
+#| warning: false
+
+kbl(christ.tbl, format.args = list(big.mark = ",")) %>%
+  kable_paper(full_width = T) %>%
+  pack_rows("Raised in a Christian home",1,4) %>%
+  pack_rows("Current Religious Identification",5,14) %>%
+  pack_rows("Current View of the Bible",15,19) 
+
+#dems.tbl %>%
+#  kableExtra::kbl(align = "cccccccccc", digits = 2, booktabs = TRUE) %>%
+#  kable_styling(latex_options = c("scale_down","hold_position"))
+```
+
+@fig-theology depicts the results of the item asking participants their current theological identification. According this plot, most of the sample are moderate in their theological views. Very few report being "Very Liberal" or "Very Conservative".
+
+```{r}
+#| label: fig-theology
+#| fig-cap: "Current Theological Identification"
+#| fig-align: left
+#| fig-cap-location: top
+#| echo: false
+#| verbose: false
+#| message: false
+#| warning: false
+source("code/Theology-Item.R")
+# 3. Barplot
+par(mar=c(5,10,5,5))
+barplot(height=theo,
+names=c("1 - Very conservative","2","3","4 - In the middle","5","6","7 - Very liberal"),
+col="red",
+axisnames = TRUE,
+xlab="Percent of Sample",
+xlim=c(0,25),
+horiz=T, las=1)
 ```
 
 ## Initial Item Analysis
@@ -35,11 +86,14 @@ In @tbl-ClassicalItemTable we report classical statistics for the 66 SHAS items.
 
 source("code/Build-Classical-Item-Stats-Table.R")
 suppressPackageStartupMessages(library(kableExtra))
-item.table2 %>%
-   kableExtra::kbl(digits=2, align = "ccccccccc", longtable = T, booktabs = T) %>%
-   kable_styling(latex_options = c("repeat_header")) %>%
-   add_header_above(c(" ", "Category response proportion" = 5, " " = 7)) %>%
-   column_spec(1, width="2cm")
+kbl(item.table2, digits = 2, format.args = list(big.mark = ",")) %>%
+  kable_paper(full_width = T)
+
+#item.table2 %>%
+#  kableExtra::kbl(digits=2, align = "ccccccccc", longtable = T, booktabs = T) %>%
+#   kable_styling(latex_options = c("repeat_header")) %>%
+#   add_header_above(c(" ", "Category response proportion" = 5, " " = 7)) %>%
+#   column_spec(1, width="2cm")
 ```
 
 ```{r}
@@ -249,10 +303,10 @@ IRT.WrightMap(mod_rsm, dim.names = "", dim.color = 'red', item.side = itemModern
 
 ### Model-Data Fit
 
-To assess the overall fit of the RSM to the SHAS item response data, we use two statistics. The first is the Root Mean Square Error of Approximation (RMSEA). The suggested cutoff for RMSEA is .06. The second is the CFI. The suggested cutoff for the CFI is .95. These fit statistics are presented in @tbl-RSM-model-fit.
+To assess the overall fit of the RSM to the SHAS item response data, we use two statistics. The first is the Root Mean Square Error of Approximation (RMSEA). The suggested cutoff for RMSEA is .06. The second is the CFI. The suggested cutoff for the CFI is .95. These fit statistics are presented in Table RSM Model Fit.
 
 ```{r}
-#| label: tbl-RSM-model-fit
+#| label: RSM-model-fit
 #| tbl-cap: "RSM Model Fit"
 #| echo: false
 #| warning: false
@@ -277,6 +331,7 @@ Differential item functioning (DIF) examines how an item functions differently f
 #| warning: false
 #| message: false
 #| verbose: false
+#| eval: false
 
 source("code/IRT-DIF-Run-Gender-DIF.R")
 plot(Gender.DIF, labels = c("Cis Male","Cis Female"))

@@ -4,9 +4,10 @@ project:
 book:
   title: "Validation of the Spiritual Harm and Abuse Scale with the Rating Scale Model"
   author:
-    - Jack Huber, Swedish Medical Center
+    - Jack Huber, Gonzaga University
     - Dan Koch, Northwest University
-  date: "8/13/2022"
+  date: last-modified
+  dateformat: "MMMM YYYY"
   chapters:
     - index.qmd
     - intro.qmd
@@ -25,9 +26,9 @@ bibliography: [references.bib, packages.bib]
 format:
   html:
     theme: cosmo
-  pdf:
-    documentclass: scrreport
-    keep-tex: true
+  #pdf:
+    #documentclass: article
+    #keep-tex: true
 
 editor: visual
 
