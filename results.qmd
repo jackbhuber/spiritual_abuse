@@ -179,7 +179,7 @@ The RSM estimates the probability of a person choosing among several response op
 
 To convey this information visually, @fig-RM-plot1 and @fig-RM-plot2 are plots of the category response functions of two items. In both, the horizontal axis is the scale of spiritual abuse expressed in logits ranging from -2 to +2. The vertical axis is the probability of selecting a given response (i.e., "Always") given the person's overall severity of spiritual abuse. The blue line is the probability of selecting Category 1 ("Never") for persons with less severe spiritual abuse. Persons with less severe spiritual abuse are most likely to select "Never" while those with more severe abuse are most likely to select "Always." Between these two extremes are persons with more moderate or average spiritual abuse. These persons are more likely to Categories 3 or 4, "Sometimes" or "Often", respectively. Both plots show curves that display identical step parameters.
 
-```{r}
+``{r}
 #| label: fig-RM-plot1
 #| fig-cap: "Category Response Plots"
 #| echo: false
@@ -190,7 +190,7 @@ source("code/IRT-Estimate-RSM.R")
 plot(mod_rsm2, type = "items", items = 9, export = F, verbose = FALSE, message = FALSE, progress = FALSE)
 ```
 
-```{r}
+``{r}
 #| label: fig-RM-plot2
 #| fig-cap: "Category Response Plots"
 #| echo: false
@@ -209,7 +209,7 @@ These plots point out a step reversal between "Never" and "Once or twice". Perso
 
 Two fit statistics commonly used in IRT models are the infit mean square and the outfit mean square [@BondFox2015]. The infit statistic places greater emphasis on unexpected responses that are close to the persons and item location. The outfit is sensitive to unexpected responses that are far from the location. The expected value of infit or outfit for each item is 1.0, with a range of acceptable values ranging from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit between items and the model. All but one of the 60 items had infit and outfit statistics within the acceptable range.
 
-```{r}
+``{r}
 #| label: tbl-RSM-item-tbl
 #| tbl-cap: "Estimated Item Parameters for the Rating Scale Model and Item Chi-Square Fit Statistics"
 #| echo: false
@@ -223,9 +223,9 @@ items.tbl.rsm %>%
   kable_styling(latex_options = "repeat_header") %>%
   add_header_above(c(" " = 2, "Item Parameters" = 2, "Fit Statistics" = 2))  %>%
   column_spec(1, width="11cm")
-```
+``
 
-```{r}
+``{r}
 #| label: fig-RSM-item-histogram
 #| fig-cap: "Distribution of Item Severity Parameters"
 #| echo: false
@@ -263,7 +263,7 @@ cex.axis = .7,
 las = 2
 )
 # abline(v=0)
-```
+``
 
 ### Reliability
 
@@ -271,13 +271,13 @@ The RSM expresses internal consistency reliability as Rasch person separation. B
 
 The SHAS also has a high Rasch item separation reliability with Rel = .XX, χ2 (XX) = XXXX.X, p \< .XX, implying that the items have a good spread in terms of item ordering and hierarchy.
 
-```{r}
+``{r}
 #| label: RSM-Item-Reliability
 #| echo: false
 #| warning: false
 #| message: false
 source("Code/IRT-RSM-Item-Separation-Reliability.R")
-```
+``
 
 ### Item-Person Map
 
@@ -285,7 +285,7 @@ source("Code/IRT-RSM-Item-Separation-Reliability.R")
 
 @fig-RSM-WrightMap shows good overlap between the person trait and item severity as evidenced by the match between the mean of the person severity (M = − 0.58) and the mean of the item severity (M = 0.00). This suggests that the majority of the items were appropriate for the sample. While person severity measures range from X.XX logits to − X.XX logits (M = − 0.XX, SD = 0.XX, N = XXXX), the item severities range from X.XX logits to − X.XX logits (M = X.XX, SD = 0.XX, N = XXXX). The item representing the most severe spiritual abuse for participants is Item X, "I feel ... XXX" with the severity at X.XX logits (also reported in Appendix Table 2). By contrast the item representing the least severe spiritual abuse is item XX, "I would ...", with − 1.08 logits.
 
-```{r}
+``{r}
 #| label: fig-RSM-WrightMap
 #| fig-cap: "Item-Person Map"
 #| echo: false
@@ -299,13 +299,13 @@ IRT.WrightMap(mod_rsm, dim.names = "", dim.color = 'red', item.side = itemModern
 
 # IRT.WrightMap(mod_rsm, show.thr.lab=FALSE)
 # wrightMap(mod_rsm, tthresh.poly)
-```
+``
 
 ### Model-Data Fit
 
 To assess the overall fit of the RSM to the SHAS item response data, we use two statistics. The first is the Root Mean Square Error of Approximation (RMSEA). The suggested cutoff for RMSEA is .06. The second is the CFI. The suggested cutoff for the CFI is .95. These fit statistics are presented in Table RSM Model Fit.
 
-```{r}
+``{r}
 #| label: RSM-model-fit
 #| tbl-cap: "RSM Model Fit"
 #| echo: false
@@ -316,7 +316,7 @@ To assess the overall fit of the RSM to the SHAS item response data, we use two 
 
 source("code/IRT-Estimate-RSM.R")
 logLik(mod_rsm)
-```
+``
 
 The obtained RMSEA value of .09 (95% CI\[.092, .093\]) exceeds the cutoff of .06. The CFI of .953 meets the recommended .95 threshold. Together these statistics evidence that the RSM fits the SHAS items.
 
@@ -324,7 +324,7 @@ The obtained RMSEA value of .09 (95% CI\[.092, .093\]) exceeds the cutoff of .06
 
 Differential item functioning (DIF) examines how an item functions differently for people of equal standing on the trait. In this case, we conducted DIF analysis of the SHAS items to examine item bias by gender, and age, and race. \[We applied logistic ordinal regression with IRT scoring. \[We used the Chi-squared likelihood-ratio statistic as the initial DIF detection criteria (alpha \< 0.01) and a cut-off of McFadden pseudo R2Δ ≥ 0.02 in model comparisons to determine substantial DIF, a reasonable threshold used in the development of self-reported health outcomes.\]
 
-```{r}
+``{r}
 #| label: fig-gender-DIF
 #| fig-cap: "Gender DIF"
 #| echo: false
@@ -335,7 +335,7 @@ Differential item functioning (DIF) examines how an item functions differently f
 
 source("code/IRT-DIF-Run-Gender-DIF.R")
 plot(Gender.DIF, labels = c("Cis Male","Cis Female"))
-```
+``
 
 In this analysis, we examined the degree to which there was evidence of uniform differential item functioning (DIF) between two subgroups of participants (group 1 and group 2). As a first step we examined item severity estimates and standard errors specific to each subgroup using the Rating Scale Model @Andrich1978. We estimated item severity for the two subgroups using a combined analysis of both subgroups and then estimating the group-specific item severities and standard errors are shown in Table X.
 

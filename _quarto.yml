@@ -6,8 +6,8 @@ book:
   author:
     - Jack Huber, Gonzaga University
     - Dan Koch, Northwest University
-  date: last-modified
-  dateformat: "MMMM YYYY"
+  #date: last-modified
+  #dateformat: "MMMM YYYY"
   chapters:
     - index.qmd
     - intro.qmd
@@ -19,7 +19,7 @@ book:
   page-navigation: true
   navbar: 
     background: primary
-  site-url: https://jackhuber.org/SHAS
+  #site-url: https://jackhuber.org/SHAS
 
 bibliography: [references.bib, packages.bib]
 
