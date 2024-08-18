@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -91,35 +125,6 @@ div.csl-indent {
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -233,16 +238,9 @@ window.Quarto = {
   <li><a href="#item-severity-parameters-and-fit-statistics" id="toc-item-severity-parameters-and-fit-statistics" class="nav-link" data-scroll-target="#item-severity-parameters-and-fit-statistics">Item Severity Parameters and Fit Statistics</a></li>
   <li><a href="#reliability" id="toc-reliability" class="nav-link" data-scroll-target="#reliability">Reliability</a></li>
   <li><a href="#item-person-map" id="toc-item-person-map" class="nav-link" data-scroll-target="#item-person-map">Item-Person Map</a></li>
-  </ul></li>
-  <li><a href="#irt.wrightmapmod_rsm-show.thr.labfalse" id="toc-irt.wrightmapmod_rsm-show.thr.labfalse" class="nav-link" data-scroll-target="#irt.wrightmapmod_rsm-show.thr.labfalse">IRT.WrightMap(mod_rsm, show.thr.lab=FALSE)</a></li>
-  <li><a href="#wrightmapmod_rsm-tthresh.poly" id="toc-wrightmapmod_rsm-tthresh.poly" class="nav-link" data-scroll-target="#wrightmapmod_rsm-tthresh.poly">wrightMap(mod_rsm, tthresh.poly)</a>
-  <ul class="collapse">
   <li><a href="#model-data-fit" id="toc-model-data-fit" class="nav-link" data-scroll-target="#model-data-fit">Model-Data Fit</a></li>
   </ul></li>
-  <li><a href="#tam.fitmod_rsm" id="toc-tam.fitmod_rsm" class="nav-link" data-scroll-target="#tam.fitmod_rsm">tam.fit(mod_rsm)</a>
-  <ul class="collapse">
   <li><a href="#dif-analysis" id="toc-dif-analysis" class="nav-link" data-scroll-target="#dif-analysis">DIF Analysis</a></li>
-  </ul></li>
   </ul>
 </nav>
     </div>
@@ -466,6 +464,181 @@ Table&nbsp;1: Demographic Characteristics
 
 
 </div>
+<div class="cell-output-display">
+<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Characteristic</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">N</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Millennial (Ages 25-40)</td>
+<td style="text-align: center;">1793</td>
+<td style="text-align: center;">55.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Generation X (Ages 41-56)</td>
+<td style="text-align: center;">677</td>
+<td style="text-align: center;">21.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Baby Boom (Ages 57-76)</td>
+<td style="text-align: center;">326</td>
+<td style="text-align: center;">10.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gen Z (Below Age 25)</td>
+<td style="text-align: center;">250</td>
+<td style="text-align: center;">7.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Silent Generation (Age 77+)</td>
+<td style="text-align: center;">166</td>
+<td style="text-align: center;">5.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">0.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Cisgender Female</td>
+<td style="text-align: center;">1635</td>
+<td style="text-align: center;">50.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Cisgender Male</td>
+<td style="text-align: center;">1320</td>
+<td style="text-align: center;">41.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">162</td>
+<td style="text-align: center;">5.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">49</td>
+<td style="text-align: center;">1.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Prefer not to say</td>
+<td style="text-align: center;">36</td>
+<td style="text-align: center;">1.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Transgender Female</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">0.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Transgender Male</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">White/European American</td>
+<td style="text-align: center;">2786</td>
+<td style="text-align: center;">86.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">162</td>
+<td style="text-align: center;">5.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">92</td>
+<td style="text-align: center;">2.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Ethnically of Hispanic/Latin origin</td>
+<td style="text-align: center;">73</td>
+<td style="text-align: center;">2.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Black/African American</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">1.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Asian</td>
+<td style="text-align: center;">47</td>
+<td style="text-align: center;">1.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">American Indian / Alaska Native</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Native Hawai'ian / Pacific Islander</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Straight</td>
+<td style="text-align: center;">2626</td>
+<td style="text-align: center;">81.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Bisexual</td>
+<td style="text-align: center;">174</td>
+<td style="text-align: center;">5.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">158</td>
+<td style="text-align: center;">4.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gay/Lesbian</td>
+<td style="text-align: center;">102</td>
+<td style="text-align: center;">3.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Queer</td>
+<td style="text-align: center;">67</td>
+<td style="text-align: center;">2.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Don't know</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">1.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Asexual</td>
+<td style="text-align: center;">44</td>
+<td style="text-align: center;">1.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
 </div>
 </figure>
 </div>
@@ -591,6 +764,181 @@ Table&nbsp;2: Religious Characteristics
 <td style="text-align: left; padding-left: 2em;" data-indentlevel="1">Total</td>
 <td style="text-align: right;">3,222</td>
 <td style="text-align: right;">100.0</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+<div class="cell-output-display">
+<table class="table do-not-create-environment cell caption-top table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Characteristic</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">N</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">%</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Millennial (Ages 25-40)</td>
+<td style="text-align: center;">1793</td>
+<td style="text-align: center;">55.6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Generation X (Ages 41-56)</td>
+<td style="text-align: center;">677</td>
+<td style="text-align: center;">21.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Baby Boom (Ages 57-76)</td>
+<td style="text-align: center;">326</td>
+<td style="text-align: center;">10.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gen Z (Below Age 25)</td>
+<td style="text-align: center;">250</td>
+<td style="text-align: center;">7.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Silent Generation (Age 77+)</td>
+<td style="text-align: center;">166</td>
+<td style="text-align: center;">5.2</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">0.3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Cisgender Female</td>
+<td style="text-align: center;">1635</td>
+<td style="text-align: center;">50.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Cisgender Male</td>
+<td style="text-align: center;">1320</td>
+<td style="text-align: center;">41.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">162</td>
+<td style="text-align: center;">5.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">49</td>
+<td style="text-align: center;">1.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Prefer not to say</td>
+<td style="text-align: center;">36</td>
+<td style="text-align: center;">1.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Transgender Female</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">0.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Transgender Male</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">White/European American</td>
+<td style="text-align: center;">2786</td>
+<td style="text-align: center;">86.5</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">162</td>
+<td style="text-align: center;">5.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">92</td>
+<td style="text-align: center;">2.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Ethnically of Hispanic/Latin origin</td>
+<td style="text-align: center;">73</td>
+<td style="text-align: center;">2.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Black/African American</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">1.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Asian</td>
+<td style="text-align: center;">47</td>
+<td style="text-align: center;">1.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">American Indian / Alaska Native</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Native Hawai'ian / Pacific Islander</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">0.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Straight</td>
+<td style="text-align: center;">2626</td>
+<td style="text-align: center;">81.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Bisexual</td>
+<td style="text-align: center;">174</td>
+<td style="text-align: center;">5.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">NA</td>
+<td style="text-align: center;">158</td>
+<td style="text-align: center;">4.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gay/Lesbian</td>
+<td style="text-align: center;">102</td>
+<td style="text-align: center;">3.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Queer</td>
+<td style="text-align: center;">67</td>
+<td style="text-align: center;">2.1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Don't know</td>
+<td style="text-align: center;">51</td>
+<td style="text-align: center;">1.6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Asexual</td>
+<td style="text-align: center;">44</td>
+<td style="text-align: center;">1.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Total</td>
+<td style="text-align: center;">3222</td>
+<td style="text-align: center;">100.0</td>
 </tr>
 </tbody>
 </table>
@@ -1721,73 +2069,166 @@ Figure&nbsp;4: Correlation Matrix of Item Residuals
 <h2 class="anchored" data-anchor-id="rasch-rating-scale-analysis">Rasch Rating Scale Analysis</h2>
 <p>We used the Rasch Rating Scale Model (RSM) <span class="citation" data-cites="Andrich1978">(<a href="references.html#ref-Andrich1978" role="doc-biblioref">Andrich, 1978</a>)</span> to examine the SHAS item pool. The RSM is a Rasch model <span class="citation" data-cites="Rasch1960">(<a href="references.html#ref-Rasch1960" role="doc-biblioref">Rasch, 1960</a>)</span> that combines (or “calibrates”) information from items with information from persons to arrive at a common scale for measuring both an item’s and a person’s level of a latent trait, in this case, severity of spiritual abuse. This scale is expressed in logits (log odds units). Whereas the Rasch model was designed for use with dichotomous items (0 = incorrect response, 1 = correct response), the RSM is an extension for use with polytomous items based on rating scales such as Likert scales of agreement <span class="citation" data-cites="EmbretsonReise2000">(<a href="references.html#ref-EmbretsonReise2000" role="doc-biblioref">Embretson &amp; Reise, 2000</a>)</span>.</p>
 <p>We also use different language from conventional IRT analyses. Because IRT was developed to measure student achievement, IRT statistics for both items and persons tend to use language of “ability” and “difficulty.” For our purpose to measure a psychological trait such as the experience of spiritual abuse, we chose instead to adopt language of “severity.” We used person parameters and scale scores to represent participants’ severity of abuse and to describe item parameters as severity parameters.</p>
-<p>library(tidyverse) library(dplyr) library(tidyr) library(knitr) library(kableExtra) library(stats4) library(lattice) library(mirt) library(WrightMap)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ ggplot2::%+%()      masks psych::%+%()
+✖ ggplot2::alpha()    masks psych::alpha(), epiDisplay::alpha()
+✖ dplyr::between()    masks maditr::between()
+✖ dplyr::coalesce()   masks maditr::coalesce()
+✖ readr::cols()       masks maditr::cols()
+✖ dplyr::compute()    masks expss::compute()
+✖ dplyr::contains()   masks tidyr::contains(), expss::contains()
+✖ dplyr::filter()     masks stats::filter()
+✖ dplyr::first()      masks maditr::first()
+✖ stringr::fixed()    masks expss::fixed()
+✖ dplyr::group_rows() masks kableExtra::group_rows()
+✖ purrr::keep()       masks expss::keep()
+✖ dplyr::lag()        masks stats::lag()
+✖ dplyr::last()       masks maditr::last()
+✖ purrr::modify()     masks expss::modify()
+✖ purrr::modify_if()  masks expss::modify_if()
+✖ dplyr::na_if()      masks expss::na_if()
+✖ tidyr::nest()       masks expss::nest()
+✖ dplyr::recode()     masks expss::recode()
+✖ stringr::regex()    masks expss::regex()
+✖ dplyr::select()     masks MASS::select()
+✖ purrr::transpose()  masks maditr::transpose()
+✖ dplyr::vars()       masks ggplot2::vars(), expss::vars()
+✖ purrr::when()       masks expss::when()
+✖ dplyr::where()      masks expss::where()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stats4)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lattice)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'lattice'
+
+The following object is masked from 'package:epiDisplay':
+
+    dotplot</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mirt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'mirt'
+
+The following objects are masked from 'package:eRm':
+
+    itemfit, personfit
+
+The following object is masked from 'package:ltm':
+
+    Science</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(WrightMap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>The RSM estimates the probability of a person choosing among several response options (i.e.&nbsp;Never, Once or twice) given two values: the severity of abuse represented by the item, and the person’s severity of the latent trait (spiritual abuse). The increase in severity involved in choosing between two response categories is called a “step parameter”. The RSM makes two assumptions of the response categories. One is that all items use the same rating scale. The other is that the same response categories distinguish persons equally well for each item. For these reasons the RSM estimates the same step parameters for all the items.</p>
 <p>To convey this information visually, <span class="quarto-unresolved-ref">?fig-RM-plot1</span> and <span class="quarto-unresolved-ref">?fig-RM-plot2</span> are plots of the category response functions of two items. In both, the horizontal axis is the scale of spiritual abuse expressed in logits ranging from -2 to +2. The vertical axis is the probability of selecting a given response (i.e., “Always”) given the person’s overall severity of spiritual abuse. The blue line is the probability of selecting Category 1 (“Never”) for persons with less severe spiritual abuse. Persons with less severe spiritual abuse are most likely to select “Never” while those with more severe abuse are most likely to select “Always.” Between these two extremes are persons with more moderate or average spiritual abuse. These persons are more likely to Categories 3 or 4, “Sometimes” or “Often”, respectively. Both plots show curves that display identical step parameters.</p>
-<p>``{r} #| label: fig-RM-plot1 #| fig-cap: “Category Response Plots” #| echo: false #| message: false #| warning: false</p>
-<p>source(“code/IRT-Estimate-RSM.R”) plot(mod_rsm2, type = “items”, items = 9, export = F, verbose = FALSE, message = FALSE, progress = FALSE)</p>
-<pre><code>
-``{r}
-#| label: fig-RM-plot2
-#| fig-cap: "Category Response Plots"
-#| echo: false
-#| message: false
-#| warning: false
-
-source("code/IRT-Estimate-RSM.R")
-plot(mod_rsm2, type = "items", items = 30, export = F, verbose = FALSE, message = FALSE, progress = FALSE)</code></pre>
+<!-- {r}  -->
+<!-- #| label: fig-RM-plot1  -->
+<!-- #| fig-cap: "Category Response Plots"  -->
+<!-- #| echo: false  -->
+<!-- #| message: false  -->
+<!-- #| warning: false -->
+<!-- source("code/IRT-Estimate-RSM.R") plot(mod_rsm2, type = "items", items = 9, export = F, verbose = FALSE, message = FALSE, progress = FALSE) -->
+<!-- {r} -->
+<!-- #| label: fig-RM-plot2 -->
+<!-- #| fig-cap: "Category Response Plots" -->
+<!-- #| echo: false -->
+<!-- #| message: false -->
+<!-- #| warning: false -->
+<!-- source("code/IRT-Estimate-RSM.R") -->
+<!-- plot(mod_rsm2, type = "items", items = 30, export = F, verbose = FALSE, message = FALSE, progress = FALSE) -->
 <p>These plots point out a step reversal between “Never” and “Once or twice”. Persons reporting the least severe spiritual abuse were most likely to report “Never” to this prompt of medical care being postponed or withheld for religious reasons. Persons farther along the scale who have experienced “average” average spiritual abuse should be more likely to report “Once or twice” but were still more likely to report “Never”. This finding suggests the “Never” and “Once or twice” categories might be collapsed.</p>
 <section id="item-severity-parameters-and-fit-statistics" class="level3">
 <h3 class="anchored" data-anchor-id="item-severity-parameters-and-fit-statistics">Item Severity Parameters and Fit Statistics</h3>
 <p><span class="quarto-unresolved-ref">?tbl-RSM-item-tbl</span> reports item parameters and fit statistics for the SHAS items. The first column, xsi, reports the severity parameter of the item, and we have sorted the items by this value from least to most severe to facilitate comparison between items. <span class="quarto-unresolved-ref">?tbl-RSM-item-tbl</span> also reports fit statistics for the items. These statistics reflect how closely the observed patterns of item responses fit the patterns of item responses predicted by the RSM. These fit statistics are chi-square statistics which examine the cumulative difference the observed pattern of item responses and the pattern of item responses that the model would expect.</p>
 <p>Two fit statistics commonly used in IRT models are the infit mean square and the outfit mean square <span class="citation" data-cites="BondFox2015">(<a href="references.html#ref-BondFox2015" role="doc-biblioref">Bond &amp; Fox, 2015</a>)</span>. The infit statistic places greater emphasis on unexpected responses that are close to the persons and item location. The outfit is sensitive to unexpected responses that are far from the location. The expected value of infit or outfit for each item is 1.0, with a range of acceptable values ranging from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit between items and the model. All but one of the 60 items had infit and outfit statistics within the acceptable range.</p>
-<p>``{r} #| label: tbl-RSM-item-tbl #| tbl-cap: “Estimated Item Parameters for the Rating Scale Model and Item Chi-Square Fit Statistics” #| echo: false #| message: false #| warning: false</p>
-<p>source(“code/IRT-Build-RSM-Item-Table.R”) suppressPackageStartupMessages(library(kableExtra)) items.tbl.rsm %&gt;% kbl(align = “cccc”, longtable = T, booktabs = T, digits = 2) %&gt;% kable_styling(latex_options = “repeat_header”) %&gt;% add_header_above(c(” ” = 2, “Item Parameters” = 2, “Fit Statistics” = 2)) %&gt;% column_spec(1, width=“11cm”) ``</p>
-<p>``{r} #| label: fig-RSM-item-histogram #| fig-cap: “Distribution of Item Severity Parameters” #| echo: false #| warning: false #| message: false</p>
-<p>source(“code/IRT-Build-RSM-Item-Table.R”) # all all &lt;- items.tbl.rsm<span class="math inline">\(xsi
-screen &lt;- subset(items.tbl.rsm\)</span>xsi, items.tbl.rsm<span class="math inline">\(screening == '*')
-control &lt;- subset(items.tbl.rsm\)</span>xsi, items.tbl.rsm<span class="math inline">\(subscale == 'controlling leadership')
-maintain &lt;- subset(items.tbl.rsm\)</span>xsi, items.tbl.rsm<span class="math inline">\(subscale == 'maintain system')
-distress &lt;- subset(items.tbl.rsm\)</span>xsi, items.tbl.rsm<span class="math inline">\(subscale == 'internal distress')
-violence &lt;- subset(items.tbl.rsm\)</span>xsi, items.tbl.rsm<span class="math inline">\(subscale == 'spiritual violence')
-god &lt;- subset(items.tbl.rsm\)</span>xsi, items.tbl.rsm$subscale == ‘harmful God-image’) x &lt;- list(“Controlling leadership”=control, “Maintain system”=maintain, “Internal distress”=distress, “Spiritual violence”=violence, “Harmful God-image”=god, “Screening items”=screen, “All items”=all)</p>
-<p>stripchart(x, main=““, xlab=”Severity of Spiritual Abuse”, # ylab=“Item set”, method=“jitter”, jitter = 0.25, col=c(“navy”,“pink”,“blue”,“green”,“orange”,“red”,“grey”), pch=18, xlim = c(-.5,2), cex.lab = .7, cex.axis = .7, las = 2 ) # abline(v=0) ``</p>
+<!-- {r}  -->
+<!-- #| label: tbl-RSM-item-tbl -->
+<!-- #| tbl-cap: "Estimated Item Parameters for the Rating Scale Model and Item Chi-Square Fit Statistics" -->
+<!-- #| echo: false  -->
+<!-- #| message: false  -->
+<!-- #| warning: false -->
+<!-- source("code/IRT-Build-RSM-Item-Table.R") suppressPackageStartupMessages(library(kableExtra)) items.tbl.rsm %\>% kbl(align = "cccc", longtable = T, booktabs = T, digits = 2) %\>% kable_styling(latex_options = "repeat_header") %\>% add_header_above(c(" " = 2, "Item Parameters" = 2, "Fit Statistics" = 2)) %\>% column_spec(1, width="11cm") -->
+<!-- {r} -->
+<!-- #| label: fig-RSM-item-histogram -->
+<!-- #| fig-cap: "Distribution of Item Severity Parameters" -->
+<!-- #| echo: false  -->
+<!-- #| warning: false  -->
+<!-- #| message: false -->
+<!-- source("code/IRT-Build-RSM-Item-Table.R") \# all all \<- items.tbl.rsm$xsi -->
+<!-- screen <- subset(items.tbl.rsm$xsi, items.tbl.rsm$screening == '*') -->
+<!-- control <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'controlling leadership') -->
+<!-- maintain <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'maintain system') -->
+<!-- distress <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'internal distress') -->
+<!-- violence <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'spiritual violence') -->
+<!-- god <- subset(items.tbl.rsm$xsi, items.tbl.rsm\$subscale == 'harmful God-image') x \<- list("Controlling leadership"=control, "Maintain system"=maintain, "Internal distress"=distress, "Spiritual violence"=violence, "Harmful God-image"=god, "Screening items"=screen, "All items"=all) -->
+<!-- stripchart(x, main="", xlab="Severity of Spiritual Abuse", \# ylab="Item set", method="jitter", jitter = 0.25, col=c("navy","pink","blue","green","orange","red","grey"), pch=18, xlim = c(-.5,2), cex.lab = .7, cex.axis = .7, las = 2 ) \# abline(v=0) -->
 </section>
 <section id="reliability" class="level3">
 <h3 class="anchored" data-anchor-id="reliability">Reliability</h3>
 <p>The RSM expresses internal consistency reliability as Rasch person separation. Based on Table X, the SHAS has a high Rasch person separation reliability value of .963, indicating that the estimated RSM scale discriminated well between persons with varying severity of spiritual abuse.</p>
 <p>The SHAS also has a high Rasch item separation reliability with Rel = .XX, χ2 (XX) = XXXX.X, p &lt; .XX, implying that the items have a good spread in terms of item ordering and hierarchy.</p>
-<p><code>{r} #| label: RSM-Item-Reliability #| echo: false #| warning: false #| message: false source("Code/IRT-RSM-Item-Separation-Reliability.R")</code></p>
+<!-- {r}  -->
+<!-- #| label: RSM-Item-Reliability  -->
+<!-- #| echo: false #| warning: false  -->
+<!-- #| message: false  -->
+<!-- source("Code/IRT-RSM-Item-Separation-Reliability.R") -->
 </section>
 <section id="item-person-map" class="level3">
 <h3 class="anchored" data-anchor-id="item-person-map">Item-Person Map</h3>
 <p><span class="quarto-unresolved-ref">?fig-RSM-WrightMap</span> displays an item-person map (also called a “Wright map”) that shows the item severities of the SHAS items and the person severities for each person who completed the survey. All these severities are estimated in logits (log odds units) as the unit of measures. This means the higher the logit value for an item is, the less likely it was for a person to endorse that particular item. On the other hand, higher logit values for each person indicate more severe spiritual abuse. On the variable map, the mean item severity is constrained to be 0.00 with person severities being relative to that mean item severity While column 1 shows the latent continuum in terms of logit values as the unit of measurement underlying the SHAS, columns 2 and 3 represent the severities of the people and the items.</p>
 <p><span class="quarto-unresolved-ref">?fig-RSM-WrightMap</span> shows good overlap between the person trait and item severity as evidenced by the match between the mean of the person severity (M = − 0.58) and the mean of the item severity (M = 0.00). This suggests that the majority of the items were appropriate for the sample. While person severity measures range from X.XX logits to − X.XX logits (M = − 0.XX, SD = 0.XX, N = XXXX), the item severities range from X.XX logits to − X.XX logits (M = X.XX, SD = 0.XX, N = XXXX). The item representing the most severe spiritual abuse for participants is Item X, “I feel … XXX” with the severity at X.XX logits (also reported in Appendix Table 2). By contrast the item representing the least severe spiritual abuse is item XX, “I would …”, with − 1.08 logits.</p>
-<p>``{r} #| label: fig-RSM-WrightMap #| fig-cap: “Item-Person Map” #| echo: false #| warning: false #| message: false</p>
-<p>source(“code/IRT-Estimate-RSM.R”) suppressPackageStartupMessages(library(WrightMap)) # tthresh.poly &lt;- tam.threshold(mod_rsm) IRT.WrightMap(mod_rsm, dim.names = ““, dim.color = ‘red’, item.side = itemModern, label.items.rows = 1, label.items.srt = 90, thr.sym.cex=0.4, show.thr.lab=FALSE, label.items.cex = 0.4, min.logit.pad = 0.25, max.logit.pad = 0.25, item.prop = .8, vertLines = TRUE, main=”“)</p>
+<!-- {r} -->
+<!-- #| label: fig-RSM-WrightMap  -->
+<!-- #| fig-cap: "Item-Person Map"  -->
+<!-- #| echo: false  -->
+<!-- #| warning: false -->
+<!-- #| message: false -->
+<!-- source("code/IRT-Estimate-RSM.R") suppressPackageStartupMessages(library(WrightMap)) \# tthresh.poly \<- tam.threshold(mod_rsm) IRT.WrightMap(mod_rsm, dim.names = "", dim.color = 'red', item.side = itemModern, label.items.rows = 1, label.items.srt = 90, thr.sym.cex=0.4, show.thr.lab=FALSE, label.items.cex = 0.4, min.logit.pad = 0.25, max.logit.pad = 0.25, item.prop = .8, vertLines = TRUE, main="") -->
+<!-- # IRT.WrightMap(mod_rsm, show.thr.lab=FALSE) -->
+<!-- # wrightMap(mod_rsm, tthresh.poly) -->
 </section>
-</section>
-<section id="irt.wrightmapmod_rsm-show.thr.labfalse" class="level1">
-<h1>IRT.WrightMap(mod_rsm, show.thr.lab=FALSE)</h1>
-</section>
-<section id="wrightmapmod_rsm-tthresh.poly" class="level1">
-<h1>wrightMap(mod_rsm, tthresh.poly)</h1>
-<p>``</p>
 <section id="model-data-fit" class="level3">
 <h3 class="anchored" data-anchor-id="model-data-fit">Model-Data Fit</h3>
 <p>To assess the overall fit of the RSM to the SHAS item response data, we use two statistics. The first is the Root Mean Square Error of Approximation (RMSEA). The suggested cutoff for RMSEA is .06. The second is the CFI. The suggested cutoff for the CFI is .95. These fit statistics are presented in Table RSM Model Fit.</p>
-<p>``{r} #| label: RSM-model-fit #| tbl-cap: “RSM Model Fit” #| echo: false #| warning: false #| message: false</p>
-</section>
-</section>
-<section id="tam.fitmod_rsm" class="level1">
-<h1>tam.fit(mod_rsm)</h1>
-<p>source(“code/IRT-Estimate-RSM.R”) logLik(mod_rsm) ``</p>
+<!-- {r}  -->
+<!-- #| label: RSM-model-fit  -->
+<!-- #| tbl-cap: "RSM Model Fit"  -->
+<!-- #| echo: false  -->
+<!-- #| warning: false  -->
+<!-- #| message: false -->
+<!-- # tam.fit(mod_rsm) -->
+<!-- source("code/IRT-Estimate-RSM.R") logLik(mod_rsm) -->
 <p>The obtained RMSEA value of .09 (95% CI[.092, .093]) exceeds the cutoff of .06. The CFI of .953 meets the recommended .95 threshold. Together these statistics evidence that the RSM fits the SHAS items.</p>
+</section>
+</section>
 <section id="dif-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="dif-analysis">DIF Analysis</h2>
 <p>Differential item functioning (DIF) examines how an item functions differently for people of equal standing on the trait. In this case, we conducted DIF analysis of the SHAS items to examine item bias by gender, and age, and race. [We applied logistic ordinal regression with IRT scoring. [We used the Chi-squared likelihood-ratio statistic as the initial DIF detection criteria (alpha &lt; 0.01) and a cut-off of McFadden pseudo R2Δ ≥ 0.02 in model comparisons to determine substantial DIF, a reasonable threshold used in the development of self-reported health outcomes.]</p>
-<p>``{r} #| label: fig-gender-DIF #| fig-cap: “Gender DIF” #| echo: false #| warning: false #| message: false #| verbose: false #| eval: false</p>
-<p>source(“code/IRT-DIF-Run-Gender-DIF.R”) plot(Gender.DIF, labels = c(“Cis Male”,“Cis Female”)) ``</p>
+<!-- {r} -->
+<!-- #| label: fig-gender-DIF -->
+<!-- #| fig-cap: "Gender DIF"  -->
+<!-- #| echo: false  -->
+<!-- #| warning: false  -->
+<!-- #| message: false  -->
+<!-- #| verbose: false  -->
+<!-- #| eval: false -->
+<!-- source("code/IRT-DIF-Run-Gender-DIF.R") plot(Gender.DIF, labels = c("Cis Male","Cis Female")) -->
 <p>In this analysis, we examined the degree to which there was evidence of uniform differential item functioning (DIF) between two subgroups of participants (group 1 and group 2). As a first step we examined item severity estimates and standard errors specific to each subgroup using the Rating Scale Model <span class="citation" data-cites="Andrich1978">Andrich (<a href="references.html#ref-Andrich1978" role="doc-biblioref">1978</a>)</span>. We estimated item severity for the two subgroups using a combined analysis of both subgroups and then estimating the group-specific item severities and standard errors are shown in Table X.</p>
 <p>To examine the differences in item severity between subgroups, we calculated standardized differences following Wright and Masters (1982) as follows:</p>
 <p>[equation]</p>
@@ -1823,7 +2264,6 @@ Rasch, G. (1960). <em>Probabilistic models for some intelligence and attainment 
 Reckase, M. D. (1979). Unifactor latent trait models applied to multifactor tests: Results and implications. <em>Journal of Educational Statistics</em>, <em>4</em>, 207–230.
 </div>
 </div>
-</section>
 </section>
 
 </main> <!-- /main -->
