@@ -6,8 +6,8 @@ book:
   author:
     - Jack Huber, Gonzaga University
     - Dan Koch, Northwest University
-  #date: last-modified
-  #dateformat: "MMMM YYYY"
+  date: last-modified
+  date-format: "MMMM YYYY"
   chapters:
     - index.qmd
     - intro.qmd
@@ -17,11 +17,14 @@ book:
     - references.qmd
   downloads: [pdf, epub]
   page-navigation: true
+  page-footer: 
+    center: "Built in R with Quarto"
   navbar: 
     background: primary
   #site-url: https://jackhuber.org/SHAS
 
 bibliography: [references.bib, packages.bib]
+csl: apa.csl
 
 format:
   html:

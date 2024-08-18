@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.52">
+<meta name="generator" content="quarto-1.5.56">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -1719,7 +1719,7 @@ Figure&nbsp;4: Correlation Matrix of Item Residuals
 </section>
 <section id="rasch-rating-scale-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="rasch-rating-scale-analysis">Rasch Rating Scale Analysis</h2>
-<p>We used the Rasch Rating Scale Model (RSM) <span class="citation" data-cites="Andrich1978">(<a href="references.html#ref-Andrich1978" role="doc-biblioref">Andrich 1978</a>)</span> to examine the SHAS item pool. The RSM is a Rasch model <span class="citation" data-cites="Rasch1960">(<a href="references.html#ref-Rasch1960" role="doc-biblioref">Rasch 1960</a>)</span> that combines (or “calibrates”) information from items with information from persons to arrive at a common scale for measuring both an item’s and a person’s level of a latent trait, in this case, severity of spiritual abuse. This scale is expressed in logits (log odds units). Whereas the Rasch model was designed for use with dichotomous items (0 = incorrect response, 1 = correct response), the RSM is an extension for use with polytomous items based on rating scales such as Likert scales of agreement <span class="citation" data-cites="EmbretsonReise2000">(<a href="references.html#ref-EmbretsonReise2000" role="doc-biblioref">Embretson and Reise 2000</a>)</span>.</p>
+<p>We used the Rasch Rating Scale Model (RSM) <span class="citation" data-cites="Andrich1978">(<a href="references.html#ref-Andrich1978" role="doc-biblioref">Andrich, 1978</a>)</span> to examine the SHAS item pool. The RSM is a Rasch model <span class="citation" data-cites="Rasch1960">(<a href="references.html#ref-Rasch1960" role="doc-biblioref">Rasch, 1960</a>)</span> that combines (or “calibrates”) information from items with information from persons to arrive at a common scale for measuring both an item’s and a person’s level of a latent trait, in this case, severity of spiritual abuse. This scale is expressed in logits (log odds units). Whereas the Rasch model was designed for use with dichotomous items (0 = incorrect response, 1 = correct response), the RSM is an extension for use with polytomous items based on rating scales such as Likert scales of agreement <span class="citation" data-cites="EmbretsonReise2000">(<a href="references.html#ref-EmbretsonReise2000" role="doc-biblioref">Embretson &amp; Reise, 2000</a>)</span>.</p>
 <p>We also use different language from conventional IRT analyses. Because IRT was developed to measure student achievement, IRT statistics for both items and persons tend to use language of “ability” and “difficulty.” For our purpose to measure a psychological trait such as the experience of spiritual abuse, we chose instead to adopt language of “severity.” We used person parameters and scale scores to represent participants’ severity of abuse and to describe item parameters as severity parameters.</p>
 <p>library(tidyverse) library(dplyr) library(tidyr) library(knitr) library(kableExtra) library(stats4) library(lattice) library(mirt) library(WrightMap)</p>
 <p>The RSM estimates the probability of a person choosing among several response options (i.e.&nbsp;Never, Once or twice) given two values: the severity of abuse represented by the item, and the person’s severity of the latent trait (spiritual abuse). The increase in severity involved in choosing between two response categories is called a “step parameter”. The RSM makes two assumptions of the response categories. One is that all items use the same rating scale. The other is that the same response categories distinguish persons equally well for each item. For these reasons the RSM estimates the same step parameters for all the items.</p>
@@ -1740,7 +1740,7 @@ plot(mod_rsm2, type = "items", items = 30, export = F, verbose = FALSE, message 
 <section id="item-severity-parameters-and-fit-statistics" class="level3">
 <h3 class="anchored" data-anchor-id="item-severity-parameters-and-fit-statistics">Item Severity Parameters and Fit Statistics</h3>
 <p><span class="quarto-unresolved-ref">?tbl-RSM-item-tbl</span> reports item parameters and fit statistics for the SHAS items. The first column, xsi, reports the severity parameter of the item, and we have sorted the items by this value from least to most severe to facilitate comparison between items. <span class="quarto-unresolved-ref">?tbl-RSM-item-tbl</span> also reports fit statistics for the items. These statistics reflect how closely the observed patterns of item responses fit the patterns of item responses predicted by the RSM. These fit statistics are chi-square statistics which examine the cumulative difference the observed pattern of item responses and the pattern of item responses that the model would expect.</p>
-<p>Two fit statistics commonly used in IRT models are the infit mean square and the outfit mean square <span class="citation" data-cites="BondFox2015">(<a href="references.html#ref-BondFox2015" role="doc-biblioref">Bond and Fox 2015</a>)</span>. The infit statistic places greater emphasis on unexpected responses that are close to the persons and item location. The outfit is sensitive to unexpected responses that are far from the location. The expected value of infit or outfit for each item is 1.0, with a range of acceptable values ranging from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit between items and the model. All but one of the 60 items had infit and outfit statistics within the acceptable range.</p>
+<p>Two fit statistics commonly used in IRT models are the infit mean square and the outfit mean square <span class="citation" data-cites="BondFox2015">(<a href="references.html#ref-BondFox2015" role="doc-biblioref">Bond &amp; Fox, 2015</a>)</span>. The infit statistic places greater emphasis on unexpected responses that are close to the persons and item location. The outfit is sensitive to unexpected responses that are far from the location. The expected value of infit or outfit for each item is 1.0, with a range of acceptable values ranging from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit between items and the model. All but one of the 60 items had infit and outfit statistics within the acceptable range.</p>
 <p>``{r} #| label: tbl-RSM-item-tbl #| tbl-cap: “Estimated Item Parameters for the Rating Scale Model and Item Chi-Square Fit Statistics” #| echo: false #| message: false #| warning: false</p>
 <p>source(“code/IRT-Build-RSM-Item-Table.R”) suppressPackageStartupMessages(library(kableExtra)) items.tbl.rsm %&gt;% kbl(align = “cccc”, longtable = T, booktabs = T, digits = 2) %&gt;% kable_styling(latex_options = “repeat_header”) %&gt;% add_header_above(c(” ” = 2, “Item Parameters” = 2, “Fit Statistics” = 2)) %&gt;% column_spec(1, width=“11cm”) ``</p>
 <p>``{r} #| label: fig-RSM-item-histogram #| fig-cap: “Distribution of Item Severity Parameters” #| echo: false #| warning: false #| message: false</p>
@@ -1803,24 +1803,24 @@ s e 2 2 is the standard error of the item severity specific to Subgroup 2. Using
 <p>Figure 3: Bar Plot of Differences In Item Severity Between Subgroups</p>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
 <div id="ref-Andrich1978" class="csl-entry" role="listitem">
-Andrich, David. 1978. <span>“A Rating Formulation for Ordered Response Categories.”</span> <em>Psychometrika</em> 43: 561–73.
+Andrich, D. (1978). A rating formulation for ordered response categories. <em>Psychometrika</em>, <em>43</em>, 561–573.
 </div>
 <div id="ref-BondFox2015" class="csl-entry" role="listitem">
-Bond, Trevor G., and Christine M. Fox. 2015. <em>Applying the Rasch Model: Fundamental Measurement in the Human Sciences</em>. New York, New York: Routledge.
+Bond, T. G., &amp; Fox, C. M. (2015). <em>Applying the rasch model: Fundamental measurement in the human sciences</em>. Routledge.
 </div>
 <div id="ref-Yen1984" class="csl-entry" role="listitem">
-<span>“Effects of Local Item Dependence on the Fit and Equating Performance of the Three-Parameter Logistic Model.”</span> 1984. <em>Applied Psychological Measurement</em> 8 (2): 125–45.
+Effects of local item dependence on the fit and equating performance of the three-parameter logistic model. (1984). <em>Applied Psychological Measurement</em>, <em>8</em>(2), 125–145.
 </div>
 <div id="ref-EmbretsonReise2000" class="csl-entry" role="listitem">
-Embretson, Susan E., and Steven P. Reise. 2000. <em>Item Response Theory for Psychologists</em>. Mahwah, New Jerey: Lawrence Erlbaum Associates.
+Embretson, S. E., &amp; Reise, S. P. (2000). <em>Item response theory for psychologists</em>. Lawrence Erlbaum Associates.
 </div>
 <div id="ref-Rasch1960" class="csl-entry" role="listitem">
-Rasch, Georg. 1960. <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Chicago, IL: University of Chicago Press.
+Rasch, G. (1960). <em>Probabilistic models for some intelligence and attainment tests</em>. University of Chicago Press.
 </div>
 <div id="ref-Reckase1979" class="csl-entry" role="listitem">
-Reckase, Mark D. 1979. <span>“Unifactor Latent Trait Models Applied to Multifactor Tests: Results and Implications.”</span> <em>Journal of Educational Statistics</em> 4: 207–30.
+Reckase, M. D. (1979). Unifactor latent trait models applied to multifactor tests: Results and implications. <em>Journal of Educational Statistics</em>, <em>4</em>, 207–230.
 </div>
 </div>
 </section>
@@ -2260,6 +2260,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Built in R with Quarto</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 
