@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "Validation of the Spiritual Harm and Abuse Scale with the Rating Scale Model"
+  title: "Validation of the Spiritual Harm and Abuse Scale (SHAS) with the Rating Scale Model"
   author:
     - Jack Huber, Gonzaga University
     - Dan Koch, Northwest University
@@ -20,8 +20,13 @@ book:
   page-footer: 
     center: "Built in R with Quarto"
   navbar: 
-    background: primary
-  #site-url: https://jackhuber.org/SHAS
+    background: navy
+    foreground: white
+    right:
+      - icon: house
+        text: "Home"
+        href: https://jackhuber.org
+  site-url: https://spiritual-abuse.jackhuber.org
 
 bibliography: [references.bib, packages.bib]
 csl: apa.csl

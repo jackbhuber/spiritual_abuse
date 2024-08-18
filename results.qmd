@@ -14,63 +14,42 @@ Most of the participants responded to the demographics items, and we present the
 #| message: false
 #| warning: false
 
-source("code/Build-Demographic-Table.R")
-suppressPackageStartupMessages(library(kableExtra))
-kbl(dems.tbl, format.args = list(big.mark = ",")) %>%
-  kable_paper(full_width = T) %>%
-  pack_rows("Generation",1,7) %>%
-  pack_rows("Gender",8,15) %>%
-  pack_rows("Race",16,24) %>%
-  pack_rows("Sexual Orientation",25,32)
+source("code/Build-Demographic-Table-2.R")
 
-dems.tbl %>%
-  kableExtra::kbl(align = "cccccccccc", digits = 2, booktabs = TRUE) %>%
-  kable_styling(latex_options = c("scale_down","hold_position"))
+dems_table
+
 ```
 
-The survey also included several items asking participants about their religious background and current identification and beliefs. We report the results of these religious characteristics in @tbl-ChristTable. Most of the sample (87%) was raised in a Christian home. Over half (56%) now self-identify as Protestant, followed by a quarter who do not identify with a religious tradition (16% "Nothing in particular" and 10% "Agnostic"). Over 60% view the Bible as divinely inspired if not to be interpreted literally.
+The survey also included several items asking participants about their religious characteristics. We report the results of these religious characteristics in @tbl-ReligTable. Most of the sample (87%) was raised in a Christian home. Over half (56%) now self-identify as Protestant, followed by a quarter who do not identify with a religious tradition (16% "Nothing in particular" and 10% "Agnostic"). Over 60% view the Bible as divinely inspired if not to be interpreted literally.
 
 ```{r}
-#| label: tbl-ChristTable
+#| label: tbl-ReligTable
 #| tbl-cap: "Religious Characteristics"
 #| echo: false
 #| verbose: false
 #| message: false
 #| warning: false
 
-kbl(christ.tbl, format.args = list(big.mark = ",")) %>%
-  kable_paper(full_width = T) %>%
-  pack_rows("Raised in a Christian home",1,4) %>%
-  pack_rows("Current Religious Identification",5,14) %>%
-  pack_rows("Current View of the Bible",15,19) 
+relig_table <-
+  tbl_summary(
+    dems.itms,
+    include = c(
+     "Raised in Christian home",
+     "Denomination of most abuse",
+     "Racial makeup of abusive community",
+     "Racial makeup of abusive group leadership",
+     "Gender makeup of abusive group leadership",
+     "Involvement in abusive group",
+     "Current religious identification",
+     "Current theological identification",
+     "Current view of Bible"
+    ),
+    sort = all_categorical(FALSE) ~ "frequency",
+  ) |>
+  bold_labels()
 
-dems.tbl %>%
-  kableExtra::kbl(align = "cccccccccc", digits = 2, booktabs = TRUE) %>%
-  kable_styling(latex_options = c("scale_down","hold_position"))
-```
+relig_table
 
-@fig-theology depicts the results of the item asking participants their current theological identification. According this plot, most of the sample are moderate in their theological views. Very few report being "Very Liberal" or "Very Conservative".
-
-```{r}
-#| label: fig-theology
-#| fig-cap: "Current Theological Identification"
-#| fig-align: left
-#| fig-cap-location: top
-#| echo: false
-#| verbose: false
-#| message: false
-#| warning: false
-
-source("code/Theology-Item.R")
-# 3. Barplot
-par(mar=c(5,10,5,5))
-barplot(height=theo,
-names=c("1 - Very conservative","2","3","4 - In the middle","5","6","7 - Very liberal"),
-col="red",
-axisnames = TRUE,
-xlab="Percent of Sample",
-xlim=c(0,25),
-horiz=T, las=1)
 ```
 
 ## Initial Item Analysis
@@ -86,6 +65,7 @@ In @tbl-ClassicalItemTable we report classical statistics for the 66 SHAS items.
 #| warning: false
 
 source("code/Build-Classical-Item-Stats-Table.R")
+
 suppressPackageStartupMessages(library(kableExtra))
 kbl(item.table2, digits = 2, format.args = list(big.mark = ",")) %>%
   kable_paper(full_width = T)
@@ -196,25 +176,34 @@ The RSM estimates the probability of a person choosing among several response op
 To convey this information visually, @fig-RM-plot1 and @fig-RM-plot2 are plots of the category response functions of two items. In both, the horizontal axis is the scale of spiritual abuse expressed in logits ranging from -2 to +2. The vertical axis is the probability of selecting a given response (i.e., "Always") given the person's overall severity of spiritual abuse. The blue line is the probability of selecting Category 1 ("Never") for persons with less severe spiritual abuse. Persons with less severe spiritual abuse are most likely to select "Never" while those with more severe abuse are most likely to select "Always." Between these two extremes are persons with more moderate or average spiritual abuse. These persons are more likely to Categories 3 or 4, "Sometimes" or "Often", respectively. Both plots show curves that display identical step parameters.
 
 <!-- {r}  -->
+
 <!-- #| label: fig-RM-plot1  -->
+
 <!-- #| fig-cap: "Category Response Plots"  -->
+
 <!-- #| echo: false  -->
+
 <!-- #| message: false  -->
+
 <!-- #| warning: false -->
 
 <!-- source("code/IRT-Estimate-RSM.R") plot(mod_rsm2, type = "items", items = 9, export = F, verbose = FALSE, message = FALSE, progress = FALSE) -->
 
-
 <!-- {r} -->
+
 <!-- #| label: fig-RM-plot2 -->
+
 <!-- #| fig-cap: "Category Response Plots" -->
+
 <!-- #| echo: false -->
+
 <!-- #| message: false -->
+
 <!-- #| warning: false -->
 
 <!-- source("code/IRT-Estimate-RSM.R") -->
-<!-- plot(mod_rsm2, type = "items", items = 30, export = F, verbose = FALSE, message = FALSE, progress = FALSE) -->
 
+<!-- plot(mod_rsm2, type = "items", items = 30, export = F, verbose = FALSE, message = FALSE, progress = FALSE) -->
 
 These plots point out a step reversal between "Never" and "Once or twice". Persons reporting the least severe spiritual abuse were most likely to report "Never" to this prompt of medical care being postponed or withheld for religious reasons. Persons farther along the scale who have experienced "average" average spiritual abuse should be more likely to report "Once or twice" but were still more likely to report "Never". This finding suggests the "Never" and "Once or twice" categories might be collapsed.
 
@@ -225,28 +214,43 @@ These plots point out a step reversal between "Never" and "Once or twice". Perso
 Two fit statistics commonly used in IRT models are the infit mean square and the outfit mean square [@BondFox2015]. The infit statistic places greater emphasis on unexpected responses that are close to the persons and item location. The outfit is sensitive to unexpected responses that are far from the location. The expected value of infit or outfit for each item is 1.0, with a range of acceptable values ranging from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit between items and the model. All but one of the 60 items had infit and outfit statistics within the acceptable range.
 
 <!-- {r}  -->
+
 <!-- #| label: tbl-RSM-item-tbl -->
+
 <!-- #| tbl-cap: "Estimated Item Parameters for the Rating Scale Model and Item Chi-Square Fit Statistics" -->
+
 <!-- #| echo: false  -->
+
 <!-- #| message: false  -->
+
 <!-- #| warning: false -->
 
 <!-- source("code/IRT-Build-RSM-Item-Table.R") suppressPackageStartupMessages(library(kableExtra)) items.tbl.rsm %\>% kbl(align = "cccc", longtable = T, booktabs = T, digits = 2) %\>% kable_styling(latex_options = "repeat_header") %\>% add_header_above(c(" " = 2, "Item Parameters" = 2, "Fit Statistics" = 2)) %\>% column_spec(1, width="11cm") -->
 
-
 <!-- {r} -->
+
 <!-- #| label: fig-RSM-item-histogram -->
+
 <!-- #| fig-cap: "Distribution of Item Severity Parameters" -->
+
 <!-- #| echo: false  -->
+
 <!-- #| warning: false  -->
+
 <!-- #| message: false -->
 
 <!-- source("code/IRT-Build-RSM-Item-Table.R") \# all all \<- items.tbl.rsm$xsi -->
+
 <!-- screen <- subset(items.tbl.rsm$xsi, items.tbl.rsm$screening == '*') -->
+
 <!-- control <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'controlling leadership') -->
+
 <!-- maintain <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'maintain system') -->
+
 <!-- distress <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'internal distress') -->
+
 <!-- violence <- subset(items.tbl.rsm$xsi, items.tbl.rsm$subscale == 'spiritual violence') -->
+
 <!-- god <- subset(items.tbl.rsm$xsi, items.tbl.rsm\$subscale == 'harmful God-image') x \<- list("Controlling leadership"=control, "Maintain system"=maintain, "Internal distress"=distress, "Spiritual violence"=violence, "Harmful God-image"=god, "Screening items"=screen, "All items"=all) -->
 
 <!-- stripchart(x, main="", xlab="Severity of Spiritual Abuse", \# ylab="Item set", method="jitter", jitter = 0.25, col=c("navy","pink","blue","green","orange","red","grey"), pch=18, xlim = c(-.5,2), cex.lab = .7, cex.axis = .7, las = 2 ) \# abline(v=0) -->
@@ -258,8 +262,11 @@ The RSM expresses internal consistency reliability as Rasch person separation. B
 The SHAS also has a high Rasch item separation reliability with Rel = .XX, χ2 (XX) = XXXX.X, p \< .XX, implying that the items have a good spread in terms of item ordering and hierarchy.
 
 <!-- {r}  -->
+
 <!-- #| label: RSM-Item-Reliability  -->
+
 <!-- #| echo: false #| warning: false  -->
+
 <!-- #| message: false  -->
 
 <!-- source("Code/IRT-RSM-Item-Separation-Reliability.R") -->
@@ -271,10 +278,15 @@ The SHAS also has a high Rasch item separation reliability with Rel = .XX, χ2 (
 @fig-RSM-WrightMap shows good overlap between the person trait and item severity as evidenced by the match between the mean of the person severity (M = − 0.58) and the mean of the item severity (M = 0.00). This suggests that the majority of the items were appropriate for the sample. While person severity measures range from X.XX logits to − X.XX logits (M = − 0.XX, SD = 0.XX, N = XXXX), the item severities range from X.XX logits to − X.XX logits (M = X.XX, SD = 0.XX, N = XXXX). The item representing the most severe spiritual abuse for participants is Item X, "I feel ... XXX" with the severity at X.XX logits (also reported in Appendix Table 2). By contrast the item representing the least severe spiritual abuse is item XX, "I would ...", with − 1.08 logits.
 
 <!-- {r} -->
+
 <!-- #| label: fig-RSM-WrightMap  -->
+
 <!-- #| fig-cap: "Item-Person Map"  -->
+
 <!-- #| echo: false  -->
+
 <!-- #| warning: false -->
+
 <!-- #| message: false -->
 
 <!-- source("code/IRT-Estimate-RSM.R") suppressPackageStartupMessages(library(WrightMap)) \# tthresh.poly \<- tam.threshold(mod_rsm) IRT.WrightMap(mod_rsm, dim.names = "", dim.color = 'red', item.side = itemModern, label.items.rows = 1, label.items.srt = 90, thr.sym.cex=0.4, show.thr.lab=FALSE, label.items.cex = 0.4, min.logit.pad = 0.25, max.logit.pad = 0.25, item.prop = .8, vertLines = TRUE, main="") -->
@@ -288,10 +300,15 @@ The SHAS also has a high Rasch item separation reliability with Rel = .XX, χ2 (
 To assess the overall fit of the RSM to the SHAS item response data, we use two statistics. The first is the Root Mean Square Error of Approximation (RMSEA). The suggested cutoff for RMSEA is .06. The second is the CFI. The suggested cutoff for the CFI is .95. These fit statistics are presented in Table RSM Model Fit.
 
 <!-- {r}  -->
+
 <!-- #| label: RSM-model-fit  -->
+
 <!-- #| tbl-cap: "RSM Model Fit"  -->
+
 <!-- #| echo: false  -->
+
 <!-- #| warning: false  -->
+
 <!-- #| message: false -->
 
 <!-- # tam.fit(mod_rsm) -->
@@ -305,12 +322,19 @@ The obtained RMSEA value of .09 (95% CI\[.092, .093\]) exceeds the cutoff of .06
 Differential item functioning (DIF) examines how an item functions differently for people of equal standing on the trait. In this case, we conducted DIF analysis of the SHAS items to examine item bias by gender, and age, and race. \[We applied logistic ordinal regression with IRT scoring. \[We used the Chi-squared likelihood-ratio statistic as the initial DIF detection criteria (alpha \< 0.01) and a cut-off of McFadden pseudo R2Δ ≥ 0.02 in model comparisons to determine substantial DIF, a reasonable threshold used in the development of self-reported health outcomes.\]
 
 <!-- {r} -->
+
 <!-- #| label: fig-gender-DIF -->
+
 <!-- #| fig-cap: "Gender DIF"  -->
+
 <!-- #| echo: false  -->
+
 <!-- #| warning: false  -->
+
 <!-- #| message: false  -->
+
 <!-- #| verbose: false  -->
+
 <!-- #| eval: false -->
 
 <!-- source("code/IRT-DIF-Run-Gender-DIF.R") plot(Gender.DIF, labels = c("Cis Male","Cis Female")) -->

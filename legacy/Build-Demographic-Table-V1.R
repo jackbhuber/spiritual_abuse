@@ -4,10 +4,15 @@
 rm(list=ls())
 
 # 2. Get Characteristic data
-all <- read.csv("data/all.csv")
+
+#all <- read.csv("data/all.csv")
 #all <- read.csv("https://github.com/jackbhuber/datasets/blob/2de63761c2b05011f80a2972d8fc2799a8802eaf/shas_full_data_set.csv")
-all <- all[ ,-1]
-dems.itms <- as.data.frame(all[,c(67:81)])
+#all <- all[ ,-1]
+#dems.itms <- as.data.frame(all[,c(67:81)])
+
+all <- read.csv('https://raw.githubusercontent.com/jackbhuber/datasets/main/shas_full_data_set.csv')
+dems.itms <- as.data.frame(all[,c(80:93,97)])
+
 names(dems.itms) <- c(
   Q84 = "Age",
   Q85 = "Gender",

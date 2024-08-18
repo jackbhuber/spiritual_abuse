@@ -14,7 +14,11 @@ The second author used snowball sampling to recruit participants to the study. H
 
 ### Demographics
 
-Demographic variables included gender, sexual orientation, race, raised in a Christian home, denomination, current religious identity, age, and theological self-description.
+Demographic variables included age, gender, race, and sexual orientation.
+
+### Religious Background Characteristics
+
+The questionnaire included several items asking about religious matters. These included items asking whether the respondent was raised in a Christian home, denomination (and demographics of membership and leadership) in which the respondent experienced abuse, current weekly consumption of progressive Christian podcast episodes, current religious identification, current theological identification, and current view of the Bible.
 
 ### Spiritual Harm and Abuse Items
 
@@ -34,4 +38,4 @@ We estimated a Rating Scale model [@Andrich1978] to the SHAS items. We began by 
 
 Finally, we conducted differential item functioning (DIF) analysis of the items to examine item bias by gender, and age, and race. \[We applied logistic ordinal regression with IRT scoring. We used the Chi-squared likelihood-ratio statistic as the initial DIF detection criteria (alpha \< 0.01), and a cut-off of McFadden pseudo R2Δ ≥ 0.02 in model comparisons to determine substantial DIF, a reasonable threshold used in the development of self-reported health outcomes.\]
 
-We conducted all analyses in **R** [@R-base]. We used the **psych** [@R-psych] and **eRm** [@R-eRm] packages for analyses of dimensionality, the **mirt** [@R-mirt] and **TAM** [@R-TAM] packages for Rating Scale analyses, and the **lordif** [@R-lordif] package for DIF analyses.
+We conducted all analyses in **R** [@R-base]. We used the **psych** [@R-psych] and **eRm** [@R-eRm] packages for analyses of dimensionality, the **mirt** [@R-mirt] and **TAM** [@R-TAM] packages for Rating Scale analyses, and the **lordif** package for DIF analyses.
