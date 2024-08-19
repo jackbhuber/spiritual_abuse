@@ -5,7 +5,8 @@ rm(list=ls())
 
 # 2. Prep data
 library(readxl) # for reading the source Excel file
-shas <- read_excel("data/data.xlsx") # load Excel file
+#shas <- read_excel("data/data.xlsx") # load Excel file
+shas <- read.csv('https://raw.githubusercontent.com/jackbhuber/datasets/main/shas_full_data_set.csv')
 all <- shas[ ,14:97] # select items, dems, from columns 14-79
 # all <- shas[ ,14:131] # select items through end of Dan's EFA work
 # all <- subset(all, select = -c(Ext_Avg:Global_Avg)) # remove columns for now

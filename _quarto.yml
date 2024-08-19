@@ -14,8 +14,14 @@ book:
     - methods.qmd
     - results.qmd
     - discussion.qmd
+    - data-availability.qmd
+    - code-availability.qmd
+    - acknowledgments.qmd
+    - funding.qmd
+    - author-information.qmd
+    - ethics.qmd
     - references.qmd
-  downloads: [pdf, epub]
+  # downloads: [pdf, epub]
   page-navigation: true
   page-footer: 
     center: "Built in R with Quarto"
@@ -35,8 +41,8 @@ format:
   html:
     theme: cosmo
   #pdf:
-    #documentclass: article
-    #keep-tex: true
+  #  documentclass: article
+  #  keep-tex: true
 
 editor: visual
 

@@ -12,44 +12,6 @@ In conclusion, the results of this study provide strong evidence for the validat
 
 This study presents the validation of the SHAS using the Rasch measurement model, for assessing spiritual abuse in adults. The findings have important implications for clinicians and researchers who are concerned about spiritual abuse. The finding that the majority of the SHAS items were of high quality implies that the items provide adequate information to measure moderate levels of spiritual abuse. However, we found the SHAS less able to distinguish people with very high and low levels of spiritual abuse. Hence, for now clinicians and researchers should be cautious when interpreting their results for people who have very high and low spiritual abuse levels.
 
-We echo the same limitations of these data noted in \@KochEdstrom2022. The SHAS was developed on a largely white and Protestant/former Protestant population. Possibly major types or sub-themes of spiritual abuse not captured here are more prominent in other religious traditions. This would be a fruitful area of future study. Research into spiritual abuse among the LGBTQ+ community might also yield insights specific to that population. Future research could also distinguish normed scores of this scale for different populations and denominations.
+We echo the same limitations of these data noted in @KochEdstrom2022. The SHAS was developed on a largely white and Protestant/former Protestant population. Possibly major types or sub-themes of spiritual abuse not captured here are more prominent in other religious traditions. This would be a fruitful area of future study. Research into spiritual abuse among the LGBTQ+ community might also yield insights specific to that population. Future research could also distinguish normed scores of this scale for different populations and denominations.
 
 The final screener has the potential to both improve therapy for innumerable clients who have experienced negative religious experiences and to contribute a knowledge base for any future clinical training around working with spiritually abused clients. The scale may also contribute to future research that could be critical in understanding not only the mechanisms and experience of spiritual abuse but also perhaps the enduring power of religion, both to heal and to harm.
-
-# Data Availability
-
-Data will be made available in accordance with xxx. Within one year of publication of manuscripts addressing the aims of the grant, investigators will make a deidentified, anonymized dataset available to the public.
-
-# Code Availability
-
-Code for the analyses presented in this paper will be made available upon request.
-
-# Acknowledgments
-
-This manuscript was not supported by grant funding. The views expressed in this article are those of the authors and do not necessarily reflect the position or policy of the Swedish Medical Center or Northwest University.
-
-# Funding
-
-This research was not supported by grant funding.
-
-# Author Information
-
-## Affiliations
-
-**Department of Pharmacy, Swedish Medical Center, Seattle, USA**
-
-Jack Huber
-
-**Department of Psychology, Northwest University, Kirkland, USA**
-
-Dan Koch
-
-## Corresponding Author
-
-Correspondence to [Jack Huber](mailto:jack.bernard.huber@gmail.com).
-
-# Ethics Declarations
-
-## Conflict of Interest
-
-The authors declare no conflict of interest.

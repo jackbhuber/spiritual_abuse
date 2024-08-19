@@ -8,7 +8,6 @@
 ]{article}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -18,6 +17,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -39,14 +42,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -73,37 +90,49 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newlength{\cslentryspacingunit} % times entry-spacing
-\setlength{\cslentryspacingunit}{\parskip}
-\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
- {% don't indent paragraphs
-  \setlength{\parindent}{0pt}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
-  \let\oldpar\par
-  \def\par{\hangindent=\cslhangindent\oldpar}
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
   \fi
   % set entry spacing
-  \setlength{\parskip}{#2\cslentryspacingunit}
- }%
- {}
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{#1\hfill\break}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{booktabs}
+\usepackage{caption}
 \usepackage{longtable}
+\usepackage{colortbl}
 \usepackage{array}
+\usepackage{anyfontsize}
 \usepackage{multirow}
 \usepackage{wrapfig}
 \usepackage{float}
-\usepackage{colortbl}
 \usepackage{pdflscape}
 \usepackage{tabu}
 \usepackage{threeparttable}
@@ -111,8 +140,6 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\makeatletter
-\makeatother
 \makeatletter
 \@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
 \makeatother
@@ -152,26 +179,22 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
+
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Validation of the Spiritual Harm and Abuse Scale with the Rating Scale Model},
-  pdfauthor={Jack Huber, Swedish Medical Center; Dan Koch, Northwest University},
+  pdftitle={Validation of the Spiritual Harm and Abuse Scale (SHAS) with the Rating Scale Model},
+  pdfauthor={Jack Huber, Gonzaga University; Dan Koch, Northwest University},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -179,15 +202,15 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-\title{Validation of the Spiritual Harm and Abuse Scale with the Rating
-Scale Model}
-\author{Jack Huber, Swedish Medical Center \and Dan Koch, Northwest
+
+\title{Validation of the Spiritual Harm and Abuse Scale (SHAS) with the
+Rating Scale Model}
+\author{Jack Huber, Gonzaga University \and Dan Koch, Northwest
 University}
-\date{8/13/2022}
+\date{August 2024}
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, boxrule=0pt, sharp corners, enhanced, frame hidden, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -195,11 +218,13 @@ University}
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
+
 \bookmarksetup{startatroot}
 
-\hypertarget{abstract}{%
-\chapter*{Abstract}\label{abstract}}
+\chapter*{Abstract}\label{abstract}
 \addcontentsline{toc}{chapter}{Abstract}
+
+\markboth{Abstract}{Abstract}
 
 Spiritual harm and abuse has been a serious problem that has begun to
 gain the attention of the clinical and psychological research community.
@@ -207,133 +232,140 @@ Some research has attempted to define spiritual harm and abuse and
 documented lasting emotional and psychological damage to victims of
 spiritual abuse. A valid scale of spiritual and religious abuse is
 needed, and the nascent Spiritual Harm and Abuse Scale (SHAS) has
-potential to meet this need. Koch and Edstrom (2022) developed an item
+potential to meet this need. (Koch \& Edstrom, 2022) developed an item
 pool and conducted an initial validation study of the SHAS which
 established the multidimensional structure of the item pool. This study
-builds on Koch and Edstrom (2022) to further validate the SHAS by using
+builds on Koch \& Edstrom (2022) to further validate the SHAS by using
 the Rasch Rating Scale Model.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{introduction}{%
-\chapter*{Introduction}\label{introduction}}
+\chapter*{Introduction}\label{introduction}
 \addcontentsline{toc}{chapter}{Introduction}
 
-Spiritual and religious abuse has been a serious problem which is
-gaining the attention of the psychological research community. Koch and
-Edstrom (2022) define spiritual abuse as ``a type of emotional and
-psychological abuse perpetrated by a religious leader or group and/or
-with a religious or spiritual component, usually involving coercion or
-control.'' Such abuse can range from psychologically controlling
-behaviors like quoting scripture or invoking divine rationale for
-mistreatment (Oakley et al., 2018); to diverse emotionally abusive
-behaviors such as rejecting, isolating, terrorizing, ignoring,
-corrupting, verbally assaulting, and over-pressuring (Pearl, 1994); to
-sexual or other physical forms of abuse by a clergy member (Doyle,
-2006). Spiritual abuse can also range in specificity from abusive acts
-by religious leaders to abuse perpetrated by a religious group or person
-representing a religious group with a religious or spiritual component
-(Swindle, 2017). Spiritual abuse may also include theologically
-sanctioned mistreatment of a group of people such LGBTQ+ persons
-(Foster, Bowland, \& Vosler, 2015).
+\markboth{Introduction}{Introduction}
 
-Spiritual and religious abuse has serious negative effects (Ward, 2011;
-Swindle, 2017; Oakley \& Kinmond, 2014; Stevens et al.~2019). Religious
-leaders may be on a par with parents in their potential for abusive
-harm. Further, trauma that takes place in a religious or spiritual
-setting may deprive victims of religion and spirituality as a coping
-strategy. There are also concerns related to secondary trauma for
-clinicians working with R/S abused clients (Gubi \& Jacobs, 2009).
+Spiritual and religious abuse has been a serious problem which is
+gaining the attention of the psychological research community.
+
+Research to date has attempted to define spiritual abuse. Spiritual
+abuse can include a wide range of psychologically controlling behaviors.
+It can include diverse emotionally abusive behaviors such as rejecting,
+isolating, terrorizing, ignoring, corrupting, verbally assaulting, and
+over-pressuring (Pearl, 1994). It can include sexual or other physical
+forms of abuse by a clergy member (Doyle, 2006). Spiritual abuse may
+include theologically sanctioned mistreatment of a group of people such
+LGBTQ+ persons (Foster et al., 2015). Spiritual abuse can range in
+specificity from abusive acts by religious leaders to abuse perpetrated
+by a religious group or person representing a religious group with a
+religious or spiritual component (Swindle, 2017). Spiritual abuse can
+also include quoting scripture or invoking divine rationale for
+mistreatment (Lv. Oakley et al., 2018). Koch \& Edstrom (2022) define
+spiritual abuse broadly as ``a type of emotional and psychological abuse
+perpetrated by a religious leader or group and/or with a religious or
+spiritual component, usually involving coercion or control.''
+
+Spiritual and religious abuse has serious negative effects (L. R. Oakley
+\& Kinmond, 2014; Stevens et al., 2019; Swindle, 2017; Ward, 2011).
+Spiritual and religious abuse can be traumatic, and such trauma that
+occurs in a religious or spiritual setting may deprive victims of
+religion and spirituality as a coping strategy. Religious leaders may be
+on a par with parents in their potential for abusive harm. There are
+also concerns related to secondary trauma for clinicians working with
+R/S abused clients (Gubi \& Jacobs, 2009).
 
 In light of these concerns, a valid scale of spiritual harm and abuse is
 needed. Practitioners who treat clients who may be victims of religious
-and spiritual abuse need an instrument for clinical use. Clinicians
-could use such a tool as part of the intake process, to evaluate their
-client's score in light of established norms. In addition, researchers
-need a reliable measurement of spiritual abuse to examine relationships
-between spiritual abuse and any number of other psychological, health,
-or other measures.
+and spiritual abuse need an instrument to assess the extent and severity
+of spiritual abuse suffered by a client. Researchers need a reliable
+measurement of spiritual abuse to examine relationships between
+spiritual abuse and any number of other psychological, health, or other
+measures.
 
-Drawing from a recent unpublished scale of religious and abuse (Keller
-2016) and other scales of abuse (Kira, et al.~2008; Sanders \&
-Becker-Lausen, 1995; Carlson, et al.~2011; Briere \& Runtz, 1989), Koch
-and Edstrom (2022) developed the Spiritual Harm \& Abuse Scale (SHAS).
-These authors drew from the literature and interviews to find a wide
-range of experiences and emotional states that could be described as
-spiritual harm and abuse. From this work they developed a pool of 66
-prompts for an online community survey which they fielded in 2021. Their
-study of the factor structure revealed a handful of factors which they
-used to distill items to a 27-item scale with six subscales.
+One promising instrument is the nascent Spiritual Harm \& Abuse Scale
+(SHAS) (Koch \& Edstrom, 2022). These authors drew from a recent
+unpublished scale of religious and spiritual abuse (Keller, 2016), other
+scales of abuse (Briere \& Runtz, 1989; Carlson et al., 2011; Kira et
+al., 2008; Sanders \& Becker-Lausen, 1995), and interviews with victims
+of abuse to document a wide range of experiences and emotional states
+that could be described as spiritual harm and abuse. From this work they
+developed a pool of 66 prompts for an online community survey which they
+fielded in 2021. Exploratory factor analysis of the data revealed six
+factors which the authors used to distill the instrument to a 27-item
+scale with six subscales.
 
-In this paper, we build upon the work of Koch and Edstrom (2022) to
-further validate the SHAS by using item response theory. Item response
-theory can enhance clinical assessments in several ways. First, IRT
-provides interval-level measures which are more appropriate for
-statistical analysis than ordinal-level sum scores. Second, IRT improves
-upon sum scores by providing a scale along which both items and persons
-can be located. Third, measurements derived from IRT are sample-free,
-meaning it is possible to estimate a person's level of the latent
-construct free of the distribution of individual items and to estimate
-an item's difficulty level free from the distribution of people used in
-the sample. Finally, IRT improves upon single overall reliability
-coefficients by providing examination of precision across the score
-continuum.
+In this paper, we further validate the SHAS by using item response
+theory. Item response theory can enhance clinical assessments in several
+ways. First, IRT provides interval-level measures which are more
+appropriate for statistical analysis than ordinal-level sum scores and
+factor scores. Second, IRT provides one scale along which both items and
+persons can be located. Third, measurements derived from IRT are
+sample-free. This means it is possible to estimate a person's level of
+the latent construct free of the distribution of individual items and to
+estimate an item's difficulty level free from the distribution of people
+used in the sample. Finally, IRT improves upon single overall
+reliability coefficients like Cronbach's alpha by providing examination
+of precision across the score continuum.
 
-The goal of this study was thus to use the Rasch Rating Scale Model (an
-IRT model) to enhance the SHAS in several ways. First, we aimed to
-express the SHAS as a single interval-level outcome measure of severity
-of spiritual harm and abuse. Second, we aimed to enrich the diagnostic
-value of the items and scale by examining severity. Third, we aimed to
-examine the distribution of item severities to see where the scale
-provides the most precise, reliable measurement of spiritual abuse. Such
-a scale also lays the foundation to further develop the SHAS by
-identifying anchor items that can calibrate with pilot items on future
-forms. Finally, we aimed to establish a SHAS score that is free of
-differential item functioning based on race, gender, and other
-demographic variables.
+The goal of this study was thus to use the Rating Scale Model (Andrich,
+1978) to validate the SHAS in several ways. First, we aimed to express
+the SHAS as a single interval-level outcome measure of cumulative
+lifetime severity of spiritual harm and abuse. Second, we aimed to
+enrich the diagnostic value of the items and scale by examining
+severity. Third, we aimed to examine the distribution of item severities
+to see where the scale provides the most precise, reliable measurement
+of spiritual abuse. Such a scale also lays the foundation to further
+develop the SHAS by identifying anchor items that can calibrate with
+pilot items on future forms. Finally, we aimed to establish a SHAS score
+that is free of differential item functioning based on race, gender, and
+other demographic variables.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{methods}{%
-\chapter*{Methods}\label{methods}}
+\chapter*{Methods}\label{methods}
 \addcontentsline{toc}{chapter}{Methods}
 
-\hypertarget{item-pool-development}{%
-\section*{Item Pool Development}\label{item-pool-development}}
+\markboth{Methods}{Methods}
+
+\section*{Item Pool Development}\label{item-pool-development}
 \addcontentsline{toc}{section}{Item Pool Development}
 
-Koch and Edstrom (2022) developed an initial pool of items to measure
+\markright{Item Pool Development}
+
+Koch \& Edstrom (2022) developed an initial pool of items to measure
 spiritual harm and abuse. The authors validated the construct of
 spiritual harm and abuse through literature review (Kvarfordt, 2010;
-Nobakht \& Dale, 2018; Oakley \& Kinmond, 2014; Rodríguez-Carballeira,
-et al.~2015; Swindle, 2017; Ward, 2011, Winell, n.d.) and interviews
-with survivors of religious and spiritual abuse. These interviews
-revealed an array of specific examples of potential abuse not described
-in the published literature such as abuse inflicted by narcissistic
-persons, financial coercion, developmentally inappropriate children's
-teachings, pressure to stay in physically abusive marriages, neglect of
-needed medical care, sexual discrimination, and shunning/shaming, among
-others. The authors generated items by drawing from publicly available
-measures of similar constructs and by writing new items to maximize
-construct coverage. Each item they adapted to measure either a
-potentially spiritually abusive event (inflicting emotional abuse by a
-religious leader or group and/or with a religious or spiritual
-component, usually involving coercion or control) or a theorized effect
-of spiritual abuse, based on the reports of self-described survivors of
-spiritual abuse in the qualitative literature. In developing items, the
-authors sought to balance construct coverage with alternate wording and
-efficiency for participants. They wanted to cover as much of the domain
-as possible in a survey that could be completed in 15 minutes.
+Nobakht \& Dale, 2017; L. R. Oakley \& Kinmond, 2014;
+Rodríguez-Carballeira et al., 2015; Swindle, 2017; Ward, 2011; Winell,
+n.d.) and interviews with survivors of religious and spiritual abuse.
+These interviews revealed an array of specific examples of potential
+abuse not described in the published literature such as abuse inflicted
+by narcissistic persons, financial coercion, developmentally
+inappropriate children's teachings, pressure to stay in physically
+abusive marriages, neglect of needed medical care, sexual
+discrimination, and shunning/shaming, among others. The authors
+generated items by drawing from publicly available measures of similar
+constructs and by writing new items to maximize construct coverage. Each
+item they adapted to measure either a potentially spiritually abusive
+event (inflicting emotional abuse by a religious leader or group and/or
+with a religious or spiritual component, usually involving coercion or
+control) or a theorized effect of spiritual abuse, based on the reports
+of self-described survivors of spiritual abuse in the qualitative
+literature. In developing items, the authors sought to balance construct
+coverage with alternate wording and efficiency for participants. They
+wanted to cover as much of the domain as possible in a survey that could
+be completed in 15 minutes.
 
-\hypertarget{participants-and-procedures}{%
 \section*{Participants and
-Procedures}\label{participants-and-procedures}}
+Procedures}\label{participants-and-procedures}
 \addcontentsline{toc}{section}{Participants and Procedures}
+
+\markright{Participants and Procedures}
 
 Participants in the initial SHAS validation study were adults who
 responded to an online survey. To qualify for the survey, participants
 had to be at least 18 years of age and to have identified themselves as
-Christian in the past (Koch and Edstrom 2022).
+Christian in the past (Koch \& Edstrom, 2022).
 
 The second author used snowball sampling to recruit participants to the
 study. He promoted the survey through various podcast feeds (in audio
@@ -348,25 +380,35 @@ sample. Participants were consented before beginning the survey. The
 study was approved by the IRB at Northwest University. Data collection
 began on January 28, 2021 and concluded on February 27, 2021.
 
-\hypertarget{measures}{%
-\section*{Measures}\label{measures}}
+\section*{Measures}\label{measures}
 \addcontentsline{toc}{section}{Measures}
 
-\hypertarget{demographics}{%
-\subsection*{Demographics}\label{demographics}}
+\markright{Measures}
+
+\subsection*{Demographics}\label{demographics}
 \addcontentsline{toc}{subsection}{Demographics}
 
-Demographic variables included gender, sexual orientation, race, raised
-in a Christian home, denomination, current religious identity, age, and
-theological self-description.
+Demographic variables included age, gender, race, and sexual
+orientation.
 
-\hypertarget{spiritual-harm-and-abuse-items}{%
+\subsection*{Religious Background
+Characteristics}\label{religious-background-characteristics}
+\addcontentsline{toc}{subsection}{Religious Background Characteristics}
+
+The questionnaire included several items asking about religious matters.
+These included items asking whether the respondent was raised in a
+Christian home, denomination (and demographics of membership and
+leadership) in which the respondent experienced abuse, current weekly
+consumption of progressive Christian podcast episodes, current religious
+identification, current theological identification, and current view of
+the Bible.
+
 \subsection*{Spiritual Harm and Abuse
-Items}\label{spiritual-harm-and-abuse-items}}
+Items}\label{spiritual-harm-and-abuse-items}
 \addcontentsline{toc}{subsection}{Spiritual Harm and Abuse Items}
 
 The final survey instrument included a total of 66 prompts separated
-into two distinct categories (Koch and Edstrom 2022). The first section,
+into two distinct categories (Koch \& Edstrom, 2022). The first section,
 External Events, included 52 prompts about potentially abusive
 experiences. Prompts in this section measured prevalence by asking ``How
 often have you experienced the above in a church or Christian group
@@ -385,35 +427,34 @@ religious experiences?'' Participants were provided the same 5-point
 Likert scale of response categories as in the first section: (1) Never,
 (2) Once or twice, (3) Sometimes, (4) Often, and (5) All the time.
 
-\hypertarget{data-analysis}{%
-\section*{Data Analysis}\label{data-analysis}}
+\section*{Data Analysis}\label{data-analysis}
 \addcontentsline{toc}{section}{Data Analysis}
 
-In their initial validation of the SHAS, Koch and Edstrom (2022)
-examined the dimensionality of the 66 items. The authors used
-exploratory factor analysis (EFA) to determine the factor structure of
-the items. In these EFA analyses, the items loaded onto six
-inter-related factors of eigenvalues of at least 1. This enabled the
-authors to distill the item pool from 66 to 27 items and to identify
-several meaningful subscales for potential future use by clinicians and
-researchers.
+\markright{Data Analysis}
+
+In their initial validation of the SHAS, Koch \& Edstrom (2022) examined
+the dimensionality of the 66 items. The authors used exploratory factor
+analysis (EFA) to determine the factor structure of the items. In these
+EFA analyses, the items loaded onto six inter-related factors of
+eigenvalues of at least 1. This enabled the authors to distill the item
+pool from 66 to 27 items and to identify several meaningful subscales
+for potential future use by clinicians and researchers.
 
 For this study, we focused on the commonality of the items in order to
 use item response theory to establish a single interval scale of
 spiritual abuse. Item response theory models make two assumptions: (1) a
 single latent trait explains responses to items (unidimensionality) and
 (2) after controlling for this latent trait, items are weakly correlated
-(local independence) (Embretson and Reise 2000; Reise and Waller 2009;
-Reise, Bonifay, and Haviland 2013). The SHAS items were multidimensional
-by design. The construct of spiritual harm and abuse is not conceptually
-narrow, and to cover the breadth of this construct, Koch and Edstrom
+(local independence) (Embretson \& Reise, 2000; Reise, Bonifay, et al.,
+2013; Reise \& Waller, 2009). The SHAS items were multidimensional by
+design. The construct of spiritual harm and abuse is not conceptually
+narrow, and to cover the breadth of this construct, Koch \& Edstrom
 (2022) wrote two distinct item sets. However, a unidimensional IRT model
-can be appropriately fit to multidimensional data (Reise, Moore, and
-Haviland 2013). In this study we hypothesized a general factor of
-spiritual abuse as the primary cause of responses to the full set of 66
-SHAS items. We therefore sought evidence of unidimensionality and local
-independence in order to calibrate the items and participants to a
-single IRT scale.
+can be appropriately fit to multidimensional data (Reise, Moore, et al.,
+2013). In this study we hypothesized a general factor of spiritual abuse
+as the primary cause of responses to the full set of 66 SHAS items. We
+therefore sought evidence of unidimensionality and local independence in
+order to calibrate the items and participants to a single IRT scale.
 
 We began by examining classical item statistics to identify poorly
 functioning items based on extreme values of skew and kurtosis and low
@@ -431,16 +472,16 @@ the data it explained. This we followed with a Principal Components
 Analysis of Residuals (PCAR) to gauge the importance of components in
 the item residuals, and with a similar statistic, Q3 ({``Effects of
 Local Item Dependence on the Fit and Equating Performance of the
-Three-Parameter Logistic Model''} 1984), to further inspect the
+Three-Parameter Logistic Model,''} 1984), to further inspect the
 correlations among item residuals.
 
-We estimated a Rating Scale model {[}Andrich (1978){]} to the SHAS
-items. We began by examining plots of the category characteristic curves
-of the items to visualize step parameters. Then we turned to item
-severity parameters and item fit statistics to inspect the technical
-quality of the items. We examined an item-person map to understand the
-fit of the items to the participants. We concluded by assessing the fit
-of the model to the data.
+We estimated a Rating Scale model (Andrich, 1978) to the SHAS items. We
+began by examining plots of the category characteristic curves of the
+items to visualize step parameters. Then we turned to item severity
+parameters and item fit statistics to inspect the technical quality of
+the items. We examined an item-person map to understand the fit of the
+items to the participants. We concluded by assessing the fit of the
+model to the data.
 
 Finally, we conducted differential item functioning (DIF) analysis of
 the items to examine item bias by gender, and age, and race. {[}We
@@ -450,23 +491,24 @@ criteria (alpha \textless{} 0.01), and a cut-off of McFadden pseudo R2Δ
 ≥ 0.02 in model comparisons to determine substantial DIF, a reasonable
 threshold used in the development of self-reported health outcomes.{]}
 
-We conducted all analyses in \textbf{R} (R Core Team 2022). We used the
-\textbf{psych} (Revelle 2022) and \textbf{eRm} (Mair, Hatzinger, and
-Maier 2021) packages for analyses of dimensionality, the \textbf{mirt}
-(Chalmers 2022) and \textbf{TAM} (Robitzsch, Kiefer, and Wu 2022)
-packages for Rating Scale analyses, and the \textbf{lordif} (Choi, Laura
-E. Gibbons, and Crane 2016) package for DIF analyses.
+We conducted all analyses in \textbf{R} (R Core Team, 2024). We used the
+\textbf{psych} (Revelle, 2024) and \textbf{eRm} (Mair et al., 2024)
+packages for analyses of dimensionality, the \textbf{mirt} (Chalmers,
+2024) and \textbf{TAM} (Robitzsch et al., 2024) packages for Rating
+Scale analyses, and the \textbf{lordif} package for DIF analyses.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{results}{%
-\chapter*{Results}\label{results}}
+\chapter*{Results}\label{results}
 \addcontentsline{toc}{chapter}{Results}
 
-\hypertarget{participant-characteristics}{%
+\markboth{Results}{Results}
+
 \section*{Participant
-Characteristics}\label{participant-characteristics}}
+Characteristics}\label{participant-characteristics}
 \addcontentsline{toc}{section}{Participant Characteristics}
+
+\markright{Participant Characteristics}
 
 In total, 3,222 individuals responded to the survey. Participants who
 did not opt out and completed at least 50\% of the spiritual abuse item
@@ -474,171 +516,181 @@ pool were considered complete responders and included in the study (N =
 3,219). Non-responders included those who responded to less than half of
 the items (N=3).
 
-Almost all participants (N = 3,064) answered demographics items, and the
-results are presented in Table~\ref{tbl-DemsTable} below. Compared to
-the general U.S. population, the sample was largely white (86\%) and
-Protestant (57\%). The average respondent saw themselves as slightly
-theologically liberal (M = 4.5, range 1-7). About 4 in 5 identified as
-straight (82\%), and most were raised in a Christian home (87\%).
+Most of the participants responded to the demographics items, and we
+present the results of these items in Table~\ref{tbl-DemsTable}. Most of
+the sample (76\%) was adults between the ages of 25 and 56, with
+Millennials (Ages 25-40) comprising nearly 56\% of the sample, followed
+by Generation X (Ages 41-56) comprising 21\%. Half the sample was
+cisgender female (51\%) and 41\% was cisgender male. The sample was also
+predominantly white (87\%) and straight (82\%).
 
-\begin{table}
+\begingroup
+\fontsize{12.0pt}{14.4pt}\selectfont
+\setlength{\LTpost}{0mm}
 
-\caption{\label{tbl-DemsTable}\textbf{?(caption)}}\begin{minipage}[t]{\linewidth}
-\subcaption{\label{tbl-DemsTable-1}}
+\begin{longtable}{lc}
 
-{\centering 
+\caption{\label{tbl-DemsTable}Demographic Characteristics}
 
-\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedleft}X>{\raggedleft}X}
-\hline
-  & N & \%\\
-\hline
-\multicolumn{3}{l}{\textbf{Generation}}\\
-\hline
-\hspace{1em}Millennial (Ages 25-40) & 1,793 & 55.6\\
-\hline
-\hspace{1em}Generation X (Ages 41-56) & 677 & 21.0\\
-\hline
-\hspace{1em}Baby Boom (Ages 57-76) & 326 & 10.1\\
-\hline
-\hspace{1em}Gen Z (Below Age 25) & 250 & 7.8\\
-\hline
-\hspace{1em}Silent Generation (Age 77+) & 166 & 5.2\\
-\hline
-\hspace{1em}NA & 10 & 0.3\\
-\hline
-\hspace{1em}Total & 3,222 & 100.0\\
-\hline
-\multicolumn{3}{l}{\textbf{Gender}}\\
-\hline
-\hspace{1em}Cisgender Female & 1,635 & 50.7\\
-\hline
-\hspace{1em}Cisgender Male & 1,320 & 41.0\\
-\hline
-\hspace{1em}NA1 & 162 & 5.0\\
-\hline
-\hspace{1em}Other & 49 & 1.5\\
-\hline
-\hspace{1em}Prefer not to say & 36 & 1.1\\
-\hline
-\hspace{1em}Transgender Female & 12 & 0.4\\
-\hline
-\hspace{1em}Transgender Male & 8 & 0.2\\
-\hline
-\hspace{1em}Total1 & 3,222 & 100.0\\
-\hline
-\multicolumn{3}{l}{\textbf{Race}}\\
-\hline
-\hspace{1em}White/European American & 2,786 & 86.5\\
-\hline
-\hspace{1em}NA2 & 162 & 5.0\\
-\hline
-\hspace{1em}Other1 & 92 & 2.9\\
-\hline
-\hspace{1em}Ethnically of Hispanic/Latin origin & 73 & 2.3\\
-\hline
-\hspace{1em}Black/African American & 51 & 1.6\\
-\hline
-\multicolumn{3}{l}{\textbf{Sexual Orientation}}\\
-\hline
-\hspace{1em}Asian & 47 & 1.5\\
-\hline
-\hspace{1em}American Indian / Alaska Native & 7 & 0.2\\
-\hline
-\hspace{1em}Native Hawai'ian / Pacific Islander & 4 & 0.1\\
-\hline
-\hspace{1em}Total2 & 3,222 & 100.0\\
-\hline
-\multicolumn{3}{l}{\textbf{Raised in a Christian Home}}\\
-\hline
-\hspace{1em}Straight & 2,626 & 81.5\\
-\hline
-\hspace{1em}Bisexual & 174 & 5.4\\
-\hline
-\hspace{1em}NA3 & 158 & 4.9\\
-\hline
-\hspace{1em}Gay/Lesbian & 102 & 3.2\\
-\hline
-\multicolumn{3}{l}{\textbf{Current Religious Identification}}\\
-\hline
-\hspace{1em}Queer & 67 & 2.1\\
-\hline
-\hspace{1em}Don't know & 51 & 1.6\\
-\hline
-\hspace{1em}Asexual & 44 & 1.4\\
-\hline
-\hspace{1em}Total3 & 3,222 & 100.0\\
-\hline
-\hspace{1em}Yes & 2,795 & 86.7\\
-\hline
-\hspace{1em}No & 266 & 8.3\\
-\hline
-\hspace{1em}NA4 & 161 & 5.0\\
-\hline
-\hspace{1em}Total4 & 3,222 & 100.0\\
-\hline
-\hspace{1em}Protestant & 1,833 & 56.9\\
-\hline
-\hspace{1em}Nothing in particular & 518 & 16.1\\
-\hline
-\multicolumn{3}{l}{\textbf{Current Theological Identification}}\\
-\hline
-\hspace{1em}Agnostic & 325 & 10.1\\
-\hline
-\hspace{1em}NA5 & 165 & 5.1\\
-\hline
-\hspace{1em}Atheist & 128 & 4.0\\
-\hline
-\hspace{1em}Orthodox Christian & 79 & 2.5\\
-\hline
-\hspace{1em}Catholic & 66 & 2.0\\
-\hline
-\hspace{1em}Mormon & 57 & 1.8\\
-\hline
-\hspace{1em}Other religious tradition & 51 & 1.6\\
-\hline
-\hspace{1em}Total5 & 3,222 & 100.0\\
-\hline
-\hspace{1em}NA6 & 1,192 & 37.0\\
-\hline
-\hspace{1em}5 & 477 & 14.8\\
-\hline
-\hspace{1em}In the middle & 468 & 14.5\\
-\hline
-\hspace{1em}6 & 384 & 11.9\\
-\hline
-\hspace{1em}3 & 263 & 8.2\\
-\hline
-\hspace{1em}Very liberal & 191 & 5.9\\
-\hline
-\hspace{1em}2 & 175 & 5.4\\
-\hline
-\hspace{1em}Very conservative & 72 & 2.2\\
-\hline
-\hspace{1em}Total6 & 3,222 & 100.0\\
-\hline
-\multicolumn{3}{l}{\textbf{Current View of the Bible}}\\
-\hline
-\hspace{1em}The Bible is the inspired word of God but not everything should be taken literally, word for word & 2,010 & 62.4\\
-\hline
-\hspace{1em}The Bible is an ancient book of fables, legends, history and moral precepts recorded by man & 870 & 27.0\\
-\hline
-\hspace{1em}The Bible is the actual word of God and is to be taken literally, word for word & 174 & 5.4\\
-\hline
-\hspace{1em}NA7 & 168 & 5.2\\
-\hline
-\hspace{1em}Total7 & 3,222 & 100.0\\
-\hline
-\end{tabu}
+\tabularnewline
 
-}
+\toprule
+\textbf{Characteristic} & \textbf{N = 3,222}\textsuperscript{\textit{1}} \\ 
+\midrule\addlinespace[2.5pt]
+{\bfseries Age} & 36 (30, 44) \\ 
+    Unknown & 166 \\ 
+{\bfseries Generation} &  \\ 
+    2 - Generation (Ages 24-39) & 1,770 (58\%) \\ 
+    3 - Generation (Ages 40-55) & 743 (24\%) \\ 
+    4 - Generation (Ages 56-74) & 341 (11\%) \\ 
+    1 - Generation (Below age 24) & 182 (6.0\%) \\ 
+    5 - Generation (Above age 74) & 20 (0.7\%) \\ 
+    Unknown & 166 \\ 
+{\bfseries Gender} &  \\ 
+    Cisgender female & 1,635 (53\%) \\ 
+    Cisgender male & 1,320 (43\%) \\ 
+    Other & 49 (1.6\%) \\ 
+    Prefer not to say & 36 (1.2\%) \\ 
+    Transgender female & 12 (0.4\%) \\ 
+    Transgender male & 8 (0.3\%) \\ 
+    Unknown & 162 \\ 
+{\bfseries Race} &  \\ 
+    White/European American & 2,786 (91\%) \\ 
+    Other & 92 (3.0\%) \\ 
+    Ethnically of Hispanic/Latino Origin & 73 (2.4\%) \\ 
+    Black/African American & 51 (1.7\%) \\ 
+    Asian & 47 (1.5\%) \\ 
+    American Indian/Alaska Native & 7 (0.2\%) \\ 
+    Native Hawaiian/Pacific Islander & 4 (0.1\%) \\ 
+    Unknown & 162 \\ 
+{\bfseries Sexual orientation} &  \\ 
+    Straight & 2,626 (86\%) \\ 
+    Bisexual & 174 (5.7\%) \\ 
+    Gay/Lesbian & 102 (3.3\%) \\ 
+    Queer & 67 (2.2\%) \\ 
+    Don't know & 51 (1.7\%) \\ 
+    Asexual & 44 (1.4\%) \\ 
+    Unknown & 158 \\ 
+{\bfseries Podcast Use} &  \\ 
+    1 - One episode per week & 1,460 (48\%) \\ 
+    2 - Two episodes per week & 1,349 (44\%) \\ 
+    3 - Three or more episodes per week & 251 (8.2\%) \\ 
+    Unknown & 162 \\ 
+\bottomrule
 
-\end{minipage}%
+\end{longtable}
 
-\end{table}
+\begin{minipage}{\linewidth}
+\textsuperscript{\textit{1}}Median (Q1, Q3); n (\%)\\
+\end{minipage}
+\endgroup
 
-\hypertarget{initial-item-analysis}{%
-\section*{Initial Item Analysis}\label{initial-item-analysis}}
+The survey also included several items asking participants about their
+religious characteristics. We report the results of these religious
+characteristics in Table~\ref{tbl-ReligTable}. Most of the sample (87\%)
+was raised in a Christian home. Over half (56\%) now self-identify as
+Protestant, followed by a quarter who do not identify with a religious
+tradition (16\% ``Nothing in particular'' and 10\% ``Agnostic''). Over
+60\% view the Bible as divinely inspired if not to be interpreted
+literally.
+
+\begingroup
+\fontsize{12.0pt}{14.4pt}\selectfont
+\setlength{\LTpost}{0mm}
+
+\begin{longtable}{lc}
+
+\caption{\label{tbl-ReligTable}Religious Characteristics}
+
+\tabularnewline
+
+\toprule
+\textbf{Characteristic} & \textbf{N = 3,222}\textsuperscript{\textit{1}} \\ 
+\midrule\addlinespace[2.5pt]
+{\bfseries Raised in Christian home} & 2,795 (91\%) \\ 
+    Unknown & 161 \\ 
+{\bfseries Denomination of most abuse} &  \\ 
+    Non-denominational & 751 (25\%) \\ 
+    Baptist & 585 (19\%) \\ 
+    Charismatic/Pentecostal & 448 (15\%) \\ 
+    Mainline & 316 (10\%) \\ 
+    Christian other than above & 301 (9.9\%) \\ 
+    Mormon & 130 (4.3\%) \\ 
+    Christian school or university & 124 (4.1\%) \\ 
+    Catholic & 118 (3.9\%) \\ 
+    Evangelistic/Missions organization & 110 (3.6\%) \\ 
+    College Christian organization & 55 (1.8\%) \\ 
+    Christian group other than the above & 49 (1.6\%) \\ 
+    Local Bible study or small group & 23 (0.8\%) \\ 
+    Christian Youth Organization & 15 (0.5\%) \\ 
+    Orthodox Christian & 11 (0.4\%) \\ 
+    Christian media company & 8 (0.3\%) \\ 
+    Christian political/activist group & 3 (<0.1\%) \\ 
+    Christian aid/social services group & 0 (0\%) \\ 
+    Unknown & 175 \\ 
+{\bfseries Racial makeup of abusive community} &  \\ 
+    Predominantly white & 2,632 (87\%) \\ 
+    Mixed race & 356 (12\%) \\ 
+    Predominantly people of color & 54 (1.8\%) \\ 
+    Unknown & 180 \\ 
+{\bfseries Racial makeup of abusive group leadership} &  \\ 
+    Predominantly white & 2,807 (92\%) \\ 
+    Mixed race & 184 (6.0\%) \\ 
+    Predominantly people of color & 53 (1.7\%) \\ 
+    Unknown & 178 \\ 
+{\bfseries Gender makeup of abusive group leadership} &  \\ 
+    All male & 1,253 (41\%) \\ 
+    Mostly male & 1,129 (37\%) \\ 
+    Mixed gender & 639 (21\%) \\ 
+    Mostly female & 24 (0.8\%) \\ 
+    All female & 3 (<0.1\%) \\ 
+    Unknown & 174 \\ 
+{\bfseries Involvement in abusive group} &  \\ 
+    7 - Strongly agree & 1,529 (50\%) \\ 
+    6 & 503 (16\%) \\ 
+    5 & 328 (11\%) \\ 
+    1 - Strongly disagree & 290 (9.5\%) \\ 
+    4 & 174 (5.7\%) \\ 
+    2 & 121 (4.0\%) \\ 
+    3 & 109 (3.6\%) \\ 
+    Unknown & 168 \\ 
+{\bfseries Current religious identification} &  \\ 
+    Protestant & 1,833 (60\%) \\ 
+    Nothing in particular & 518 (17\%) \\ 
+    Agnostic & 325 (11\%) \\ 
+    Atheist & 128 (4.2\%) \\ 
+    Orthodox Christian & 79 (2.6\%) \\ 
+    Catholic & 66 (2.2\%) \\ 
+    Mormon & 57 (1.9\%) \\ 
+    Other religious tradition & 51 (1.7\%) \\ 
+    Unknown & 165 \\ 
+{\bfseries Current theological identification} &  \\ 
+    5 & 477 (23\%) \\ 
+    4 - In the midddle & 468 (23\%) \\ 
+    6 & 384 (19\%) \\ 
+    3 & 263 (13\%) \\ 
+    7 - Very liberal & 191 (9.4\%) \\ 
+    2 & 175 (8.6\%) \\ 
+    1 - Very conservative & 72 (3.5\%) \\ 
+    Unknown & 1,192 \\ 
+{\bfseries Current view of Bible} &  \\ 
+    The Bible is the inspired word of God but not everything should be taken literally, word for word & 2,010 (66\%) \\ 
+    The Bible is an ancient book of fables, legends, history and moral precepts recorded by man & 870 (28\%) \\ 
+    The Bible is the actual word of God and is to be taken literally, word for word & 174 (5.7\%) \\ 
+    Unknown & 168 \\ 
+\bottomrule
+
+\end{longtable}
+
+\begin{minipage}{\linewidth}
+\textsuperscript{\textit{1}}n (\%)\\
+\end{minipage}
+\endgroup
+
+\section*{Initial Item Analysis}\label{initial-item-analysis}
 \addcontentsline{toc}{section}{Initial Item Analysis}
+
+\markright{Initial Item Analysis}
 
 In Table~\ref{tbl-ClassicalItemTable} we report classical statistics for
 the 66 SHAS items. We sorted the items by their mean. We flagged six
@@ -650,157 +702,161 @@ to these items. Thus, because these items do not apply to the vast
 majority of people in this population, we removed them from the item
 pool. This reduced the pool from 66 to 59 items.
 
-\hypertarget{tbl-ClassicalItemTable}{}
 \begin{table}
-\caption{\label{tbl-ClassicalItemTable}Classical Item Statistics }\tabularnewline
 
-\centering
-\begin{tabular}{l|r|r|r|r|r|r|r|r|r|r|r|l}
+\caption{\label{tbl-ClassicalItemTable}Classical Item Statistics}
+
+\centering{
+
+\begin{tabu} to \linewidth {>{\raggedright}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X>{\raggedright}X}
 \hline
   & 1 & 2 & 3 & 4 & 5 & n & mean & sd & skew & kurtosis & Item-total correlation & flag\\
 \hline
-EQ46 - Treated as less than because of my skin color & 0.9395827 & 0.0270944 & 0.0224229 & 0.0068514 & 0.0040486 & 3211 & 1.108689 & 0.4811291 & 5.1523211 & 28.9349091 & 0.1565970 & *\\
+EQ46 - Treated as less than because of my skin color & 0.94 & 0.03 & 0.02 & 0.01 & 0.00 & 3,211 & 1.11 & 0.48 & 5.15 & 28.93 & 0.16 & *\\
 \hline
-EQ41 - Denied opportunities to serve because of my sexual orientation & 0.8938026 & 0.0239801 & 0.0286515 & 0.0214886 & 0.0320772 & 3211 & 1.274058 & 0.8776968 & 3.3019704 & 9.8650240 & 0.3112405 & *\\
+EQ41 - Denied opportunities to serve because of my sexual orientation & 0.89 & 0.02 & 0.03 & 0.02 & 0.03 & 3,211 & 1.27 & 0.88 & 3.30 & 9.87 & 0.31 & *\\
 \hline
-EQ17 - Treated as less than b/c my sexual orientation & 0.8756234 & 0.0218204 & 0.0324190 & 0.0305486 & 0.0395885 & 3208 & 1.336658 & 0.9730399 & 2.8715911 & 6.9622040 & 0.3460268 & *\\
+EQ17 - Treated as less than b/c my sexual orientation & 0.88 & 0.02 & 0.03 & 0.03 & 0.04 & 3,208 & 1.34 & 0.97 & 2.87 & 6.96 & 0.35 & *\\
 \hline
-EQ47 - Medical care being postponed/withheld for religious reasons & 0.7026103 & 0.1659416 & 0.0941579 & 0.0248602 & 0.0124301 & 3218 & 1.478558 & 0.8581415 & 1.9296796 & 3.3985582 & 0.5168228 & \\
+EQ47 - Medical care being postponed/withheld for religious reasons & 0.70 & 0.17 & 0.09 & 0.02 & 0.01 & 3,218 & 1.48 & 0.86 & 1.93 & 3.40 & 0.52 & \\
 \hline
-EQ60 - Encouraged by leader to stay in abusive marriage & 0.7570006 & 0.0948973 & 0.0740510 & 0.0507156 & 0.0233354 & 3214 & 1.488488 & 0.9912587 & 2.0472413 & 3.2165449 & 0.4766286 & *\\
+EQ60 - Encouraged by leader to stay in abusive marriage & 0.76 & 0.09 & 0.07 & 0.05 & 0.02 & 3,214 & 1.49 & 0.99 & 2.05 & 3.22 & 0.48 & *\\
 \hline
-EQ55 - Hearing cultural references in sermons unfamiliar to my race/eth. subculture & 0.6558502 & 0.1806552 & 0.1060842 & 0.0414977 & 0.0159126 & 3205 & 1.580967 & 0.9464829 & 1.6644052 & 2.1163193 & 0.2836091 & *\\
+EQ55 - Hearing cultural references in sermons unfamiliar to my race/eth. subculture & 0.66 & 0.18 & 0.11 & 0.04 & 0.02 & 3,205 & 1.58 & 0.95 & 1.66 & 2.12 & 0.28 & *\\
 \hline
-IQ72 - Feeling as if God harmed me directly & 0.6374593 & 0.1700326 & 0.1299674 & 0.0426710 & 0.0198697 & 3070 & 1.637459 & 0.9928864 & 1.5221158 & 1.5538985 & 0.5449422 & \\
+IQ72 - Feeling as if God harmed me directly & 0.64 & 0.17 & 0.13 & 0.04 & 0.02 & 3,070 & 1.64 & 0.99 & 1.52 & 1.55 & 0.54 & \\
 \hline
-IQ81 - Nightmares about my negative religious experiences & 0.5600390 & 0.2089164 & 0.1542467 & 0.0559714 & 0.0208266 & 3073 & 1.768630 & 1.0355805 & 1.2253198 & 0.6596669 & 0.6466694 & \\
+IQ81 - Nightmares about my negative religious experiences & 0.56 & 0.21 & 0.15 & 0.06 & 0.02 & 3,073 & 1.77 & 1.04 & 1.23 & 0.66 & 0.65 & \\
 \hline
-EQ65 - Cut off/shunned by more religious family members & 0.5891304 & 0.1639752 & 0.1257764 & 0.0776398 & 0.0434783 & 3220 & 1.822360 & 1.1771341 & 1.2724562 & 0.4845499 & 0.6105017 & \\
+EQ65 - Cut off/shunned by more religious family members & 0.59 & 0.16 & 0.13 & 0.08 & 0.04 & 3,220 & 1.82 & 1.18 & 1.27 & 0.48 & 0.61 & \\
 \hline
-EQ10 - Asked to give up personal goals by pastor & 0.5894410 & 0.1568323 & 0.1338509 & 0.0757764 & 0.0440994 & 3220 & 1.828261 & 1.1807754 & 1.2540315 & 0.4356287 & 0.6356687 & \\
+EQ10 - Asked to give up personal goals by pastor & 0.59 & 0.16 & 0.13 & 0.08 & 0.04 & 3,220 & 1.83 & 1.18 & 1.25 & 0.44 & 0.64 & \\
 \hline
-EQ26 - Pressured to forgive abuser while abuse was ongoing & 0.6042964 & 0.1369863 & 0.1061644 & 0.0899751 & 0.0625778 & 3212 & 1.869552 & 1.2716321 & 1.2382086 & 0.2055715 & 0.6569027 & \\
+EQ26 - Pressured to forgive abuser while abuse was ongoing & 0.60 & 0.14 & 0.11 & 0.09 & 0.06 & 3,212 & 1.87 & 1.27 & 1.24 & 0.21 & 0.66 & \\
 \hline
-EQ24 - Expected to consult pastor/leader before making non-religious decisions & 0.5566594 & 0.1608196 & 0.1614405 & 0.0822726 & 0.0388078 & 3221 & 1.885750 & 1.1763661 & 1.0973826 & 0.0735042 & 0.6627536 & \\
+EQ24 - Expected to consult pastor/leader before making non-religious decisions & 0.56 & 0.16 & 0.16 & 0.08 & 0.04 & 3,221 & 1.89 & 1.18 & 1.10 & 0.07 & 0.66 & \\
 \hline
-EQ23 - Prayer replacing needed medical interventions & 0.5107176 & 0.2056539 & 0.1711712 & 0.0810811 & 0.0313762 & 3219 & 1.916744 & 1.1322834 & 1.0174237 & 0.0170891 & 0.6350472 & \\
+EQ23 - Prayer replacing needed medical interventions & 0.51 & 0.21 & 0.17 & 0.08 & 0.03 & 3,219 & 1.92 & 1.13 & 1.02 & 0.02 & 0.64 & \\
 \hline
-EQ27 - Denied opportunities to serve b/c of my gender & 0.6049114 & 0.1066211 & 0.1165682 & 0.0889027 & 0.0829966 & 3217 & 1.938452 & 1.3493841 & 1.1396464 & -0.1302150 & 0.4829046 & *\\
+EQ27 - Denied opportunities to serve b/c of my gender & 0.60 & 0.11 & 0.12 & 0.09 & 0.08 & 3,217 & 1.94 & 1.35 & 1.14 & -0.13 & 0.48 & *\\
 \hline
-EQ31 - Shunned/ignored by pastor/church/group & 0.4628536 & 0.2247435 & 0.1768729 & 0.0904569 & 0.0450730 & 3217 & 2.030152 & 1.1860606 & 0.9154507 & -0.1974252 & 0.6426227 & \\
+EQ31 - Shunned/ignored by pastor/church/group & 0.46 & 0.22 & 0.18 & 0.09 & 0.05 & 3,217 & 2.03 & 1.19 & 0.92 & -0.20 & 0.64 & \\
 \hline
-EQ30 - Deterred from seeking mental health treatment/counseling/medication & 0.4995340 & 0.1686859 & 0.1705499 & 0.1102827 & 0.0509475 & 3219 & 2.044424 & 1.2523002 & 0.8757116 & -0.4639693 & 0.7029500 & \\
+EQ30 - Deterred from seeking mental health treatment/counseling/medication & 0.50 & 0.17 & 0.17 & 0.11 & 0.05 & 3,219 & 2.04 & 1.25 & 0.88 & -0.46 & 0.70 & \\
 \hline
-EQ43 - Shamed by pastor/group for poor spiritual/moral performance & 0.4563258 & 0.2216351 & 0.1843332 & 0.0966739 & 0.0410320 & 3217 & 2.044451 & 1.1811438 & 0.8636841 & -0.3069771 & 0.7323943 & \\
+EQ43 - Shamed by pastor/group for poor spiritual/moral performance & 0.46 & 0.22 & 0.18 & 0.10 & 0.04 & 3,217 & 2.04 & 1.18 & 0.86 & -0.31 & 0.73 & \\
 \hline
-IQ68 - Anxiety attacks triggered by religious stimuli & 0.4877969 & 0.1705174 & 0.1864627 & 0.1090140 & 0.0462089 & 3073 & 2.055321 & 1.2343546 & 0.8323847 & -0.5071562 & 0.6783530 & \\
+IQ68 - Anxiety attacks triggered by religious stimuli & 0.49 & 0.17 & 0.19 & 0.11 & 0.05 & 3,073 & 2.06 & 1.23 & 0.83 & -0.51 & 0.68 & \\
 \hline
-EQ52 - Blamed for harm I suffered rather than blaming who harmed me & 0.4815045 & 0.1871309 & 0.1579111 & 0.1193659 & 0.0540877 & 3217 & 2.077401 & 1.2641890 & 0.8514428 & -0.5176548 & 0.7578518 & \\
+EQ52 - Blamed for harm I suffered rather than blaming who harmed me & 0.48 & 0.19 & 0.16 & 0.12 & 0.05 & 3,217 & 2.08 & 1.26 & 0.85 & -0.52 & 0.76 & \\
 \hline
-IQ70 - Feeling betrayed by God & 0.4190290 & 0.2368850 & 0.2052786 & 0.0922124 & 0.0465950 & 3069 & 2.110459 & 1.1835402 & 0.7941743 & -0.3551962 & 0.5609317 & \\
+IQ70 - Feeling betrayed by God & 0.42 & 0.24 & 0.21 & 0.09 & 0.05 & 3,069 & 2.11 & 1.18 & 0.79 & -0.36 & 0.56 & \\
 \hline
-EQ49 - Leadership/group protecting and elevating abusive individuals & 0.4366636 & 0.2209773 & 0.1770931 & 0.1129785 & 0.0522876 & 3213 & 2.123249 & 1.2335081 & 0.7948161 & -0.5022920 & 0.7182639 & \\
+EQ49 - Leadership/group protecting and elevating abusive individuals & 0.44 & 0.22 & 0.18 & 0.11 & 0.05 & 3,213 & 2.12 & 1.23 & 0.79 & -0.50 & 0.72 & \\
 \hline
-EQ16 - Church/community abandoning me in difficult time & 0.4491763 & 0.2110662 & 0.1653715 & 0.1097296 & 0.0646565 & 3217 & 2.129624 & 1.2724290 & 0.8291414 & -0.4981870 & 0.6928740 & \\
+EQ16 - Church/community abandoning me in difficult time & 0.45 & 0.21 & 0.17 & 0.11 & 0.06 & 3,217 & 2.13 & 1.27 & 0.83 & -0.50 & 0.69 & \\
 \hline
-EQ57 - Developing mental/physical ailments from conforming to group/leader’s expectation & 0.4771668 & 0.1630941 & 0.1640261 & 0.1208450 & 0.0748680 & 3219 & 2.153153 & 1.3324715 & 0.7845010 & -0.6995773 & 0.7192478 & \\
+EQ57 - Developing mental/physical ailments from conforming to group/leader’s expectation & 0.48 & 0.16 & 0.16 & 0.12 & 0.07 & 3,219 & 2.15 & 1.33 & 0.78 & -0.70 & 0.72 & \\
 \hline
-EQ20 - Members pressured to give money despite financial hardship & 0.4973578 & 0.1498290 & 0.1457880 & 0.1125272 & 0.0944980 & 3217 & 2.156979 & 1.3855291 & 0.8242971 & -0.7106096 & 0.6833409 & \\
+EQ20 - Members pressured to give money despite financial hardship & 0.50 & 0.15 & 0.15 & 0.11 & 0.09 & 3,217 & 2.16 & 1.39 & 0.82 & -0.71 & 0.68 & \\
 \hline
-EQ62 - Scripture used to justify physical violence & 0.4316770 & 0.1891304 & 0.2145963 & 0.1149068 & 0.0496894 & 3220 & 2.161801 & 1.2358804 & 0.6878150 & -0.6729996 & 0.6498002 & \\
+EQ62 - Scripture used to justify physical violence & 0.43 & 0.19 & 0.21 & 0.11 & 0.05 & 3,220 & 2.16 & 1.24 & 0.69 & -0.67 & 0.65 & \\
 \hline
-EQ59 - Pastor/group blame victim for their abuse & 0.4199565 & 0.2147964 & 0.1942804 & 0.1230961 & 0.0478707 & 3217 & 2.164128 & 1.2292229 & 0.7017682 & -0.6519877 & 0.7589764 & \\
+EQ59 - Pastor/group blame victim for their abuse & 0.42 & 0.21 & 0.19 & 0.12 & 0.05 & 3,217 & 2.16 & 1.23 & 0.70 & -0.65 & 0.76 & \\
 \hline
-EQ21 - Taught I would risk Hell if left my church/group & 0.5102548 & 0.1345556 & 0.1270976 & 0.1006837 & 0.1274083 & 3218 & 2.200435 & 1.4653515 & 0.8147287 & -0.8324262 & 0.6853244 & \\
+EQ21 - Taught I would risk Hell if left my church/group & 0.51 & 0.13 & 0.13 & 0.10 & 0.13 & 3,218 & 2.20 & 1.47 & 0.81 & -0.83 & 0.69 & \\
 \hline
-EQ50 - Treated as less than because of my gender & 0.5228332 & 0.0844983 & 0.1460081 & 0.1323392 & 0.1143212 & 3219 & 2.230817 & 1.4746146 & 0.7020063 & -1.0394444 & 0.5421710 & \\
+EQ50 - Treated as less than because of my gender & 0.52 & 0.08 & 0.15 & 0.13 & 0.11 & 3,219 & 2.23 & 1.47 & 0.70 & -1.04 & 0.54 & \\
 \hline
-IQ82 - Having trouble navigating life outside my church/community & 0.3751221 & 0.2250081 & 0.2409639 & 0.1055031 & 0.0534028 & 3071 & 2.237056 & 1.2095471 & 0.6206675 & -0.6209723 & 0.6086362 & \\
+IQ82 - Having trouble navigating life outside my church/community & 0.38 & 0.23 & 0.24 & 0.11 & 0.05 & 3,071 & 2.24 & 1.21 & 0.62 & -0.62 & 0.61 & \\
 \hline
-EQ64 - Witnessing women pressured to stay in unfaithful/abusive marriages & 0.3878882 & 0.2285714 & 0.1931677 & 0.1208075 & 0.0695652 & 3220 & 2.255590 & 1.2749711 & 0.6693585 & -0.6955736 & 0.7103399 & \\
+EQ64 - Witnessing women pressured to stay in unfaithful/abusive marriages & 0.39 & 0.23 & 0.19 & 0.12 & 0.07 & 3,220 & 2.26 & 1.27 & 0.67 & -0.70 & 0.71 & \\
 \hline
-EQ28 - Leadershi/group protecting abusive individuals & 0.3740672 & 0.2422264 & 0.1906095 & 0.1333955 & 0.0597015 & 3216 & 2.262438 & 1.2518729 & 0.6341189 & -0.7294336 & 0.7234130 & \\
+EQ28 - Leadershi/group protecting abusive individuals & 0.37 & 0.24 & 0.19 & 0.13 & 0.06 & 3,216 & 2.26 & 1.25 & 0.63 & -0.73 & 0.72 & \\
 \hline
-EQ40 - Threatening Divine punishment to keep group members in line & 0.4381988 & 0.1661491 & 0.1770186 & 0.1170807 & 0.1015528 & 3220 & 2.277640 & 1.3860116 & 0.6746966 & -0.8795770 & 0.7504499 & \\
+EQ40 - Threatening Divine punishment to keep group members in line & 0.44 & 0.17 & 0.18 & 0.12 & 0.10 & 3,220 & 2.28 & 1.39 & 0.67 & -0.88 & 0.75 & \\
 \hline
-EQ63 - Shamed by pastor/group for raising questions or concerns & 0.3593410 & 0.2337582 & 0.2157289 & 0.1308673 & 0.0603046 & 3217 & 2.299036 & 1.2459296 & 0.5752653 & -0.7665272 & 0.7652563 & \\
+EQ63 - Shamed by pastor/group for raising questions or concerns & 0.36 & 0.23 & 0.22 & 0.13 & 0.06 & 3,217 & 2.30 & 1.25 & 0.58 & -0.77 & 0.77 & \\
 \hline
-EQ19 - Behavior excessively monitored by pastor/group & 0.3995030 & 0.1839080 & 0.1929171 & 0.1469400 & 0.0767319 & 3219 & 2.317490 & 1.3306079 & 0.5615147 & -0.9589515 & 0.7526837 & \\
+EQ19 - Behavior excessively monitored by pastor/group & 0.40 & 0.18 & 0.19 & 0.15 & 0.08 & 3,219 & 2.32 & 1.33 & 0.56 & -0.96 & 0.75 & \\
 \hline
-EQ51 - Extreme pressure to be pastor/missionary/spiritual leader & 0.4070274 & 0.1853234 & 0.1691542 & 0.1430348 & 0.0954602 & 3216 & 2.334577 & 1.3769933 & 0.5912771 & -0.9847502 & 0.6171390 & \\
+EQ51 - Extreme pressure to be pastor/missionary/spiritual leader & 0.41 & 0.19 & 0.17 & 0.14 & 0.10 & 3,216 & 2.33 & 1.38 & 0.59 & -0.98 & 0.62 & \\
 \hline
-EQ53 - Scripture used to justify abusive parent-child behavior & 0.3875078 & 0.1858297 & 0.1967060 & 0.1385954 & 0.0913611 & 3218 & 2.360472 & 1.3533196 & 0.5478560 & -0.9728351 & 0.7309165 & \\
+EQ53 - Scripture used to justify abusive parent-child behavior & 0.39 & 0.19 & 0.20 & 0.14 & 0.09 & 3,218 & 2.36 & 1.35 & 0.55 & -0.97 & 0.73 & \\
 \hline
-IQ79 - Distrust of God & 0.3285528 & 0.2262060 & 0.2441330 & 0.1232073 & 0.0779009 & 3068 & 2.395697 & 1.2690830 & 0.5045781 & -0.8085448 & 0.6078591 & \\
+IQ79 - Distrust of God & 0.33 & 0.23 & 0.24 & 0.12 & 0.08 & 3,068 & 2.40 & 1.27 & 0.50 & -0.81 & 0.61 & \\
 \hline
-EQ34 - Scripture used to justify physical punishment/severe discipline & 0.3395464 & 0.1947810 & 0.2199441 & 0.1575023 & 0.0882262 & 3219 & 2.460081 & 1.3313195 & 0.4151207 & -1.0492944 & 0.6547195 & \\
+EQ34 - Scripture used to justify physical punishment/severe discipline & 0.34 & 0.19 & 0.22 & 0.16 & 0.09 & 3,219 & 2.46 & 1.33 & 0.42 & -1.05 & 0.65 & \\
 \hline
-EQ29 - Feeling special when in pastor’s good graces; otherwise ignored & 0.3401805 & 0.1910987 & 0.2156863 & 0.1630875 & 0.0899471 & 3213 & 2.471522 & 1.3401367 & 0.4006164 & -1.0815736 & 0.6864489 & \\
+EQ29 - Feeling special when in pastor’s good graces; otherwise ignored & 0.34 & 0.19 & 0.22 & 0.16 & 0.09 & 3,213 & 2.47 & 1.34 & 0.40 & -1.08 & 0.69 & \\
 \hline
-IQ73 - Self-hatred or self-loathing & 0.3118490 & 0.2083333 & 0.2386068 & 0.1529948 & 0.0882161 & 3072 & 2.497396 & 1.3074915 & 0.3844755 & -1.0030737 & 0.6387816 & \\
+IQ73 - Self-hatred or self-loathing & 0.31 & 0.21 & 0.24 & 0.15 & 0.09 & 3,072 & 2.50 & 1.31 & 0.38 & -1.00 & 0.64 & \\
 \hline
-EQ11 - Disagree w/pastor portrayed as evil & 0.3233831 & 0.2086443 & 0.1952736 & 0.1744403 & 0.0982587 & 3216 & 2.515547 & 1.3548166 & 0.3801464 & -1.1234940 & 0.7711366 & \\
+EQ11 - Disagree w/pastor portrayed as evil & 0.32 & 0.21 & 0.20 & 0.17 & 0.10 & 3,216 & 2.52 & 1.35 & 0.38 & -1.12 & 0.77 & \\
 \hline
-EQ58 - Terror/horror used to motivate religious decisions & 0.3192547 & 0.1844720 & 0.2372671 & 0.1605590 & 0.0984472 & 3220 & 2.534472 & 1.3415220 & 0.3409418 & -1.0935595 & 0.7300273 & \\
+EQ58 - Terror/horror used to motivate religious decisions & 0.32 & 0.18 & 0.24 & 0.16 & 0.10 & 3,220 & 2.53 & 1.34 & 0.34 & -1.09 & 0.73 & \\
 \hline
-EQ7 - Pastor speaking on God's behalf & 0.3520995 & 0.1760498 & 0.1863142 & 0.1555210 & 0.1300156 & 3215 & 2.535303 & 1.4299385 & 0.3942742 & -1.2077688 & 0.6716449 & \\
+EQ7 - Pastor speaking on God's behalf & 0.35 & 0.18 & 0.19 & 0.16 & 0.13 & 3,215 & 2.54 & 1.43 & 0.39 & -1.21 & 0.67 & \\
 \hline
-EQ42 - Seeing others shamed/shunned by pastor/leader/group & 0.2469673 & 0.2438569 & 0.2559876 & 0.1732504 & 0.0799378 & 3215 & 2.595334 & 1.2495836 & 0.2841571 & -0.9556146 & 0.7657871 & \\
+EQ42 - Seeing others shamed/shunned by pastor/leader/group & 0.25 & 0.24 & 0.26 & 0.17 & 0.08 & 3,215 & 2.60 & 1.25 & 0.28 & -0.96 & 0.77 & \\
 \hline
-EQ44 - Love/acceptance offered only for high spiritual/moral performance & 0.3027666 & 0.1768729 & 0.2266086 & 0.1927261 & 0.1010258 & 3217 & 2.612372 & 1.3546524 & 0.2387455 & -1.1962895 & 0.7992916 & \\
+EQ44 - Love/acceptance offered only for high spiritual/moral performance & 0.30 & 0.18 & 0.23 & 0.19 & 0.10 & 3,217 & 2.61 & 1.35 & 0.24 & -1.20 & 0.80 & \\
 \hline
-EQ56 - Being made to feel I was crazy/weird for doubts/questions & 0.2729251 & 0.1746969 & 0.2256761 & 0.2098228 & 0.1168791 & 3217 & 2.723034 & 1.3666041 & 0.1407812 & -1.2355701 & 0.8163586 & \\
+EQ56 - Being made to feel I was crazy/weird for doubts/questions & 0.27 & 0.17 & 0.23 & 0.21 & 0.12 & 3,217 & 2.72 & 1.37 & 0.14 & -1.24 & 0.82 & \\
 \hline
-EQ18 - Church/pastor discourage critical thinking & 0.2692547 & 0.1655280 & 0.2440994 & 0.1925466 & 0.1285714 & 3220 & 2.745652 & 1.3730519 & 0.1375678 & -1.2134479 & 0.7744873 & \\
+EQ18 - Church/pastor discourage critical thinking & 0.27 & 0.17 & 0.24 & 0.19 & 0.13 & 3,220 & 2.75 & 1.37 & 0.14 & -1.21 & 0.77 & \\
 \hline
-EQ45 - Developmentally-inappropriate/anxious Hell/Satan/demons taught to young children & 0.2870457 & 0.1730351 & 0.1978875 & 0.1773843 & 0.1646474 & 3219 & 2.759553 & 1.4491477 & 0.1818558 & -1.3269851 & 0.7195803 & \\
+EQ45 - Developmentally-inappropriate/anxious Hell/Satan/demons taught to young children & 0.29 & 0.17 & 0.20 & 0.18 & 0.16 & 3,219 & 2.76 & 1.45 & 0.18 & -1.33 & 0.72 & \\
 \hline
-IQ78 - A lack of self-worth & 0.2263106 & 0.1940736 & 0.2657115 & 0.2064474 & 0.1074569 & 3071 & 2.774666 & 1.2982159 & 0.0968582 & -1.0932785 & 0.6675121 & \\
+IQ78 - A lack of self-worth & 0.23 & 0.19 & 0.27 & 0.21 & 0.11 & 3,071 & 2.77 & 1.30 & 0.10 & -1.09 & 0.67 & \\
 \hline
-EQ36 - Mental/physical problems interpreted as spiritual/moral weakness & 0.2384950 & 0.1930970 & 0.2400498 & 0.2086443 & 0.1197139 & 3216 & 2.777985 & 1.3363539 & 0.1111756 & -1.1693737 & 0.7658458 & \\
+EQ36 - Mental/physical problems interpreted as spiritual/moral weakness & 0.24 & 0.19 & 0.24 & 0.21 & 0.12 & 3,216 & 2.78 & 1.34 & 0.11 & -1.17 & 0.77 & \\
 \hline
-EQ61 - Developmentally-inappropriate/anxious end times descriptions taught to young children & 0.2960547 & 0.1528425 & 0.1950916 & 0.1867039 & 0.1693072 & 3219 & 2.780367 & 1.4674550 & 0.1420634 & -1.3709412 & 0.7172025 & \\
+EQ61 - Developmentally-inappropriate/anxious end times descriptions taught to young children & 0.30 & 0.15 & 0.20 & 0.19 & 0.17 & 3,219 & 2.78 & 1.47 & 0.14 & -1.37 & 0.72 & \\
 \hline
-EQ32 - Feeling unable to express unhappiness & 0.2423113 & 0.1637154 & 0.2699596 & 0.2131097 & 0.1109040 & 3219 & 2.786580 & 1.3208634 & 0.0540513 & -1.1419035 & 0.7325739 & \\
+EQ32 - Feeling unable to express unhappiness & 0.24 & 0.16 & 0.27 & 0.21 & 0.11 & 3,219 & 2.79 & 1.32 & 0.05 & -1.14 & 0.73 & \\
 \hline
-IQ74 - Sadness over the loss of my faith/religious community & 0.2233800 & 0.1869098 & 0.2735265 & 0.2084012 & 0.1077825 & 3071 & 2.790296 & 1.2948093 & 0.0738505 & -1.0844180 & 0.6026024 & \\
+IQ74 - Sadness over the loss of my faith/religious community & 0.22 & 0.19 & 0.27 & 0.21 & 0.11 & 3,071 & 2.79 & 1.29 & 0.07 & -1.08 & 0.60 & \\
 \hline
-IQ76 - Feeling I wasted years of my life in a church/set of beliefs & 0.2838542 & 0.1588542 & 0.1920573 & 0.1764323 & 0.1888021 & 3072 & 2.827474 & 1.4821813 & 0.1225295 & -1.3879612 & 0.7388281 & \\
+IQ76 - Feeling I wasted years of my life in a church/set of beliefs & 0.28 & 0.16 & 0.19 & 0.18 & 0.19 & 3,072 & 2.83 & 1.48 & 0.12 & -1.39 & 0.74 & \\
 \hline
-EQ54 - Being explicitly taught to distrust my intuitions & 0.2331365 & 0.1594653 & 0.2350016 & 0.2023624 & 0.1700342 & 3217 & 2.916693 & 1.4029191 & 0.0110085 & -1.2598969 & 0.7525781 & \\
+EQ54 - Being explicitly taught to distrust my intuitions & 0.23 & 0.16 & 0.24 & 0.20 & 0.17 & 3,217 & 2.92 & 1.40 & 0.01 & -1.26 & 0.75 & \\
 \hline
-EQ37 - Made to feel less spiritually mature than pastor/leadership & 0.2154610 & 0.1704440 & 0.2371934 & 0.2126669 & 0.1642347 & 3221 & 2.939770 & 1.3779897 & -0.0093147 & -1.2219475 & 0.7540613 & \\
+EQ37 - Made to feel less spiritually mature than pastor/leadership & 0.22 & 0.17 & 0.24 & 0.21 & 0.16 & 3,221 & 2.94 & 1.38 & -0.01 & -1.22 & 0.75 & \\
 \hline
-EQ38 - Unrealistic demands placed on my moral/religious behavior & 0.2238110 & 0.1607087 & 0.2353124 & 0.2026733 & 0.1774946 & 3217 & 2.949332 & 1.4023724 & -0.0107287 & -1.2553007 & 0.8037212 & \\
+EQ38 - Unrealistic demands placed on my moral/religious behavior & 0.22 & 0.16 & 0.24 & 0.20 & 0.18 & 3,217 & 2.95 & 1.40 & -0.01 & -1.26 & 0.80 & \\
 \hline
-IQ71 - Avoiding religious activities/settings to reduce distressing feelings & 0.1932336 & 0.1724138 & 0.2436565 & 0.2166558 & 0.1740403 & 3074 & 3.005856 & 1.3633546 & -0.0560137 & -1.1856500 & 0.7388664 & \\
+IQ71 - Avoiding religious activities/settings to reduce distressing feelings & 0.19 & 0.17 & 0.24 & 0.22 & 0.17 & 3,074 & 3.01 & 1.36 & -0.06 & -1.19 & 0.74 & \\
 \hline
-IQ69 - Lack of spiritual direction/purpose & 0.1309020 & 0.1960274 & 0.3236731 & 0.2272875 & 0.1221101 & 3071 & 3.013676 & 1.1981834 & -0.0569490 & -0.8286759 & 0.5722400 & \\
+IQ69 - Lack of spiritual direction/purpose & 0.13 & 0.20 & 0.32 & 0.23 & 0.12 & 3,071 & 3.01 & 1.20 & -0.06 & -0.83 & 0.57 & \\
 \hline
-EQ39 - Made to feel shame over natural sexual desires (not actions) & 0.2376514 & 0.1279901 & 0.2028580 & 0.2072072 & 0.2242933 & 3219 & 3.052501 & 1.4767861 & -0.1152484 & -1.3667605 & 0.7197297 & \\
+EQ39 - Made to feel shame over natural sexual desires (not actions) & 0.24 & 0.13 & 0.20 & 0.21 & 0.22 & 3,219 & 3.05 & 1.48 & -0.12 & -1.37 & 0.72 & \\
 \hline
-IQ80 - Feeling isolated & 0.1390879 & 0.1762215 & 0.2882736 & 0.2690554 & 0.1273616 & 3070 & 3.069381 & 1.2274983 & -0.1702208 & -0.9067475 & 0.6846409 & \\
+IQ80 - Feeling isolated & 0.14 & 0.18 & 0.29 & 0.27 & 0.13 & 3,070 & 3.07 & 1.23 & -0.17 & -0.91 & 0.68 & \\
 \hline
-IQ77 - Anger upon reflecting on negative religious experiences & 0.1502439 & 0.1782114 & 0.2595122 & 0.2627642 & 0.1492683 & 3075 & 3.082602 & 1.2777841 & -0.1573534 & -1.0213286 & 0.7729016 & \\
+IQ77 - Anger upon reflecting on negative religious experiences & 0.15 & 0.18 & 0.26 & 0.26 & 0.15 & 3,075 & 3.08 & 1.28 & -0.16 & -1.02 & 0.77 & \\
 \hline
-EQ35 - Taught to distrust my emotions & 0.1877526 & 0.1442338 & 0.2315822 & 0.2294063 & 0.2070252 & 3217 & 3.123718 & 1.3921377 & -0.1785115 & -1.2028178 & 0.7360981 & \\
+EQ35 - Taught to distrust my emotions & 0.19 & 0.14 & 0.23 & 0.23 & 0.21 & 3,217 & 3.12 & 1.39 & -0.18 & -1.20 & 0.74 & \\
 \hline
-EQ25 - Feeling unable to raise questions and issues & 0.1532484 & 0.1470314 & 0.2471247 & 0.2676407 & 0.1849549 & 3217 & 3.184022 & 1.3168751 & -0.2579377 & -1.0360790 & 0.7611809 & \\
+EQ25 - Feeling unable to raise questions and issues & 0.15 & 0.15 & 0.25 & 0.27 & 0.18 & 3,217 & 3.18 & 1.32 & -0.26 & -1.04 & 0.76 & \\
 \hline
-EQ66 - Others treated as less than due to their sexual orientation & 0.1759950 & 0.1190920 & 0.2083333 & 0.2540423 & 0.2425373 & 3216 & 3.268035 & 1.4057153 & -0.3385528 & -1.1506398 & 0.7085432 & \\
+EQ66 - Others treated as less than due to their sexual orientation & 0.18 & 0.12 & 0.21 & 0.25 & 0.24 & 3,216 & 3.27 & 1.41 & -0.34 & -1.15 & 0.71 & \\
 \hline
-EQ22 - Expected to follow pastor/leader rules re: dating/marriage/sex & 0.1960845 & 0.1140460 & 0.1535115 & 0.2374145 & 0.2989434 & 3218 & 3.329086 & 1.4912966 & -0.3872492 & -1.2802002 & 0.7003695 & \\
+EQ22 - Expected to follow pastor/leader rules re: dating/marriage/sex & 0.20 & 0.11 & 0.15 & 0.24 & 0.30 & 3,218 & 3.33 & 1.49 & -0.39 & -1.28 & 0.70 & \\
 \hline
-\end{tabular}
-\end{table}
+\end{tabu}
 
-\hypertarget{unidimensionality-and-local-independence}{%
+}
+
+\end{table}%
+
 \section*{Unidimensionality and Local
-Independence}\label{unidimensionality-and-local-independence}}
+Independence}\label{unidimensionality-and-local-independence}
 \addcontentsline{toc}{section}{Unidimensionality and Local Independence}
 
-\hypertarget{principal-components}{%
-\subsection*{Principal Components}\label{principal-components}}
+\markright{Unidimensionality and Local Independence}
+
+\subsection*{Principal Components}\label{principal-components}
 \addcontentsline{toc}{subsection}{Principal Components}
 
 We first analyzed the principal components in the 59 SHAS items. As
@@ -812,16 +868,17 @@ component to that of the second is approximately 13.
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-pca-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-pca-1.pdf}
 
 }
 
 \caption{\label{fig-pca}Principal Components}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{proportion-of-variance}{%
-\subsection*{Proportion of Variance}\label{proportion-of-variance}}
+\subsection*{Proportion of Variance}\label{proportion-of-variance}
 \addcontentsline{toc}{subsection}{Proportion of Variance}
 
 Second, we estimated a unidimensional Rasch model on dichotomized
@@ -833,9 +890,8 @@ unidimensionality assumption is safely met if the Rasch model explains
 variance in the SHAS item data explained by the Rasch model was .23.
 Thus, the SHAS data meet this criterion.
 
-\hypertarget{principal-component-analysis-of-residuals-pcar}{%
 \subsection*{Principal Component Analysis of Residuals
-(PCAR)}\label{principal-component-analysis-of-residuals-pcar}}
+(PCAR)}\label{principal-component-analysis-of-residuals-pcar}
 \addcontentsline{toc}{subsection}{Principal Component Analysis of
 Residuals (PCAR)}
 
@@ -848,17 +904,18 @@ analysis found only one contrast that rose above that 2.0 threshold.
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-pcar-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-pcar-1.pdf}
 
 }
 
 \caption{\label{fig-pcar}Contrasts from PCA of Standardized Residual
 Correlations}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{q3}{%
-\subsection*{Q3}\label{q3}}
+\subsection*{Q3}\label{q3}
 \addcontentsline{toc}{subsection}{Q3}
 
 Finally, we calculated the Q3 statistic {``Effects of Local Item
@@ -889,29 +946,32 @@ Yen's Q3 Statistic based on an estimated theta score
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-q3-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-q3-1.pdf}
 
 }
 
 \caption{\label{fig-q3}Correlation Matrix of Item Residuals}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{rasch-rating-scale-analysis}{%
 \section*{Rasch Rating Scale
-Analysis}\label{rasch-rating-scale-analysis}}
+Analysis}\label{rasch-rating-scale-analysis}
 \addcontentsline{toc}{section}{Rasch Rating Scale Analysis}
 
-We used the Rasch Rating Scale Model (RSM) (Andrich 1978) to examine the
-SHAS item pool. The RSM is a Rasch model (Rasch 1960) that combines (or
-``calibrates'') information from items with information from persons to
-arrive at a common scale for measuring both an item's and a person's
+\markright{Rasch Rating Scale Analysis}
+
+We used the Rasch Rating Scale Model (RSM) (Andrich, 1978) to examine
+the SHAS item pool. The RSM is a Rasch model (Rasch, 1960) that combines
+(or ``calibrates'') information from items with information from persons
+to arrive at a common scale for measuring both an item's and a person's
 level of a latent trait, in this case, severity of spiritual abuse. This
 scale is expressed in logits (log odds units). Whereas the Rasch model
 was designed for use with dichotomous items (0 = incorrect response, 1 =
 correct response), the RSM is an extension for use with polytomous items
-based on rating scales such as Likert scales of agreement (Embretson and
-Reise 2000).
+based on rating scales such as Likert scales of agreement (Embretson \&
+Reise, 2000).
 
 We also use different language from conventional IRT analyses. Because
 IRT was developed to measure student achievement, IRT statistics for
@@ -921,10 +981,6 @@ the experience of spiritual abuse, we chose instead to adopt language of
 ``severity.'' We used person parameters and scale scores to represent
 participants' severity of abuse and to describe item parameters as
 severity parameters.
-
-library(tidyverse) library(dplyr) library(tidyr) library(knitr)
-library(kableExtra) library(stats4) library(lattice) library(mirt)
-library(WrightMap)
 
 The RSM estimates the probability of a person choosing among several
 response options (i.e.~Never, Once or twice) given two values: the
@@ -936,19 +992,19 @@ all items use the same rating scale. The other is that the same response
 categories distinguish persons equally well for each item. For these
 reasons the RSM estimates the same step parameters for all the items.
 
-To convey this information visually, Figure~\ref{fig-RM-plot1} and
-Figure~\ref{fig-RM-plot2} are plots of the category response functions
-of two items. In both, the horizontal axis is the scale of spiritual
-abuse expressed in logits ranging from -2 to +2. The vertical axis is
-the probability of selecting a given response (i.e., ``Always'') given
-the person's overall severity of spiritual abuse. The blue line is the
-probability of selecting Category 1 (``Never'') for persons with less
-severe spiritual abuse. Persons with less severe spiritual abuse are
-most likely to select ``Never'' while those with more severe abuse are
-most likely to select ``Always.'' Between these two extremes are persons
-with more moderate or average spiritual abuse. These persons are more
-likely to Categories 3 or 4, ``Sometimes'' or ``Often'', respectively.
-Both plots show curves that display identical step parameters.
+To convey this information visually, \textbf{?@fig-RM-plot1} presents
+plots of the category response functions of two items. In both, the
+horizontal axis is the scale of spiritual abuse expressed in logits
+ranging from -2 to +2. The vertical axis is the probability of selecting
+a given response (i.e., ``Always'') given the person's overall severity
+of spiritual abuse. The blue line is the probability of selecting
+Category 1 (``Never'') for persons with less severe spiritual abuse.
+Persons with less severe spiritual abuse are most likely to select
+``Never'' while those with more severe abuse are most likely to select
+``Always.'' Between these two extremes are persons with more moderate or
+average spiritual abuse. These persons are more likely to Categories 3
+or 4, ``Sometimes'' or ``Often'', respectively. Both plots show curves
+that display identical step parameters.
 
 \begin{verbatim}
 Iteration in WLE/MLE estimation  1   | Maximal change  2.7551 
@@ -964,35 +1020,27 @@ Iteration in WLE/MLE estimation  7   | Maximal change  0
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-RM-plot1-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-RM-plot1-1.pdf}
 
 }
 
-\caption{\label{fig-RM-plot1}Category Response Plots}
+\caption{\label{fig-RM-plot1-1}Category Response Plots}
 
-\end{figure}
-
-\begin{verbatim}
-Iteration in WLE/MLE estimation  1   | Maximal change  2.7551 
-Iteration in WLE/MLE estimation  2   | Maximal change  0.8593 
-Iteration in WLE/MLE estimation  3   | Maximal change  0.4864 
-Iteration in WLE/MLE estimation  4   | Maximal change  0.1926 
-Iteration in WLE/MLE estimation  5   | Maximal change  0.028 
-Iteration in WLE/MLE estimation  6   | Maximal change  0.0012 
-Iteration in WLE/MLE estimation  7   | Maximal change  0 
-----
- WLE Reliability= 0.963 
-\end{verbatim}
+\end{figure}%
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-RM-plot2-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-RM-plot1-2.pdf}
 
 }
 
-\caption{\label{fig-RM-plot2}Category Response Plots}
+\caption{\label{fig-RM-plot1-2}Category Response Plots}
 
-\end{figure}
+\end{figure}%
 
 These plots point out a step reversal between ``Never'' and ``Once or
 twice''. Persons reporting the least severe spiritual abuse were most
@@ -1003,9 +1051,8 @@ more likely to report ``Once or twice'' but were still more likely to
 report ``Never''. This finding suggests the ``Never'' and ``Once or
 twice'' categories might be collapsed.
 
-\hypertarget{item-severity-parameters-and-fit-statistics}{%
 \subsection*{Item Severity Parameters and Fit
-Statistics}\label{item-severity-parameters-and-fit-statistics}}
+Statistics}\label{item-severity-parameters-and-fit-statistics}
 \addcontentsline{toc}{subsection}{Item Severity Parameters and Fit
 Statistics}
 
@@ -1021,7 +1068,7 @@ difference the observed pattern of item responses and the pattern of
 item responses that the model would expect.
 
 Two fit statistics commonly used in IRT models are the infit mean square
-and the outfit mean square (Bond and Fox 2015). The infit statistic
+and the outfit mean square (Bond \& Fox, 2015). The infit statistic
 places greater emphasis on unexpected responses that are close to the
 persons and item location. The outfit is sensitive to unexpected
 responses that are far from the location. The expected value of infit or
@@ -1030,11 +1077,13 @@ from 0.5 to 1.5. Values outside these boundaries indicate a lack of fit
 between items and the model. All but one of the 60 items had infit and
 outfit statistics within the acceptable range.
 
-\hypertarget{tbl-RSM-item-tbl}{}
-\begin{longtable}[t]{>{\raggedright\arraybackslash}
-\caption{\label{tbl-RSM-item-tbl}Estimated Item Parameters for the Rating Scale Model and Item Chi-Square
-Fit Statistics }\tabularnewline
-p{11cm}ccccc}
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{11cm}ccccc}
+
+\caption{\label{tbl-RSM-item-tbl}Estimated Item Parameters for the
+Rating Scale Model and Item Chi-Square Fit Statistics}
+
+\tabularnewline
+
 \toprule
 \multicolumn{2}{c}{ } & \multicolumn{2}{c}{Item Parameters} & \multicolumn{2}{c}{Fit Statistics} \\
 \cmidrule(l{3pt}r{3pt}){3-4} \cmidrule(l{3pt}r{3pt}){5-6}
@@ -1050,92 +1099,94 @@ p{11cm}ccccc}
 \endfoot
 \bottomrule
 \endlastfoot
-*EQ22 - Expected to follow pastor/leader rules re: dating/marriage/sex & controlling leadership & -0.42 & 0.02 & 1.21 & 1.25\\
-EQ66 - Others treated as less than due to their sexual orientation &  & -0.35 & 0.02 & 1.10 & 1.05\\
+*EQ22 - Expected to follow pastor/leader rules re: dating/marriage/sex & controlling leadership & -0.42 & 0.02 & 1.20 & 1.26\\
+EQ66 - Others treated as less than due to their sexual orientation &  & -0.35 & 0.02 & 1.09 & 1.05\\
 EQ25 - Feeling unable to raise questions and issues &  & -0.26 & 0.02 & 0.77 & 0.76\\
-EQ35 - Taught to distrust my emotions &  & -0.19 & 0.02 & 1.07 & 0.97\\
-*IQ77 - Anger upon reflecting on negative religious experiences & internal distress & -0.13 & 0.02 & 0.71 & 0.69\\
+EQ35 - Taught to distrust my emotions &  & -0.19 & 0.02 & 1.06 & 0.97\\
+*IQ77 - Anger upon reflecting on negative religious experiences & internal distress & -0.13 & 0.02 & 0.72 & 0.69\\
 \addlinespace
 EQ39 - Made to feel shame over natural sexual desires (not actions) &  & -0.12 & 0.02 & 1.11 & 1.12\\
 *IQ80 - Feeling isolated & internal distress & -0.11 & 0.02 & 0.94 & 0.87\\
-*IQ69 - Lack of spiritual direction/purpose & internal distress & -0.05 & 0.02 & 1.34 & 1.12\\
+*IQ69 - Lack of spiritual direction/purpose & internal distress & -0.05 & 0.02 & 1.35 & 1.12\\
 *IQ71 - Avoiding religious activities/settings to reduce distressing feelings & internal distress & -0.04 & 0.02 & 0.92 & 0.92\\
 EQ38 - Unrealistic demands placed on my moral/religious behavior &  & 0.00 & 0.02 & 0.74 & 0.77\\
 \addlinespace
-EQ37 - Made to feel less spiritually mature than pastor/leadership &  & 0.01 & 0.02 & 0.91 & 0.90\\
-EQ54 - Being explicitly taught to distrust my intuitions &  & 0.03 & 0.02 & 0.94 & 0.93\\
+EQ37 - Made to feel less spiritually mature than pastor/leadership &  & 0.01 & 0.02 & 0.90 & 0.90\\
+EQ54 - Being explicitly taught to distrust my intuitions &  & 0.03 & 0.02 & 0.93 & 0.93\\
 IQ76 - Feeling I wasted years of my life in a church/set of beliefs &  & 0.15 & 0.02 & 1.06 & 1.09\\
-EQ32 - Feeling unable to express unhappiness &  & 0.17 & 0.02 & 0.92 & 0.88\\
+EQ32 - Feeling unable to express unhappiness &  & 0.17 & 0.02 & 0.91 & 0.89\\
 EQ61 - Developmentally-inappropriate/anxious end times descriptions taught to young children &  & 0.18 & 0.02 & 1.10 & 1.14\\
 \addlinespace
 EQ36 - Mental/physical problems interpreted as spiritual/moral weakness &  & 0.18 & 0.02 & 0.83 & 0.82\\
 *IQ74 - Sadness over the loss of my faith/religious community & internal distress & 0.19 & 0.02 & 1.33 & 1.18\\
 *EQ45 - Developmentally-inappropriate/anxious Hell/Satan/demons taught to young children & spiritual violence & 0.20 & 0.02 & 1.08 & 1.10\\
 *IQ78 - A lack of self-worth & internal distress & 0.20 & 0.02 & 1.08 & 1.02\\
-EQ18 - Church/pastor discourage critical thinking &  & 0.22 & 0.02 & 0.82 & 0.84\\
+EQ18 - Church/pastor discourage critical thinking &  & 0.22 & 0.02 & 0.81 & 0.84\\
 \addlinespace
-EQ56 - Being made to feel I was crazy/weird for doubts/questions &  & 0.24 & 0.02 & 0.67 & 0.71\\
-EQ44 - Love/acceptance offered only for high spiritual/moral performance &  & 0.36 & 0.02 & 0.74 & 0.75\\
-EQ42 - Seeing others shamed/shunned by pastor/leader/group &  & 0.38 & 0.02 & 0.74 & 0.73\\
-*EQ7 - Pastor speaking on God's behalf & controlling leadership & 0.45 & 0.02 & 1.37 & 1.26\\
+EQ56 - Being made to feel I was crazy/weird for doubts/questions &  & 0.24 & 0.02 & 0.68 & 0.71\\
+EQ44 - Love/acceptance offered only for high spiritual/moral performance &  & 0.36 & 0.02 & 0.75 & 0.76\\
+EQ42 - Seeing others shamed/shunned by pastor/leader/group &  & 0.38 & 0.02 & 0.75 & 0.73\\
+*EQ7 - Pastor speaking on God's behalf & controlling leadership & 0.45 & 0.02 & 1.36 & 1.26\\
 *EQ58 - Terror/horror used to motivate religious decisions & spiritual violence & 0.45 & 0.02 & 0.91 & 0.94\\
 \addlinespace
-EQ11 - Disagree w/pastor portrayed as evil &  & 0.47 & 0.02 & 0.83 & 0.86\\
+EQ11 - Disagree w/pastor portrayed as evil &  & 0.47 & 0.02 & 0.82 & 0.85\\
 *IQ73 - Self-hatred or self-loathing & internal distress & 0.51 & 0.02 & 1.18 & 1.16\\
-EQ29 - Feeling special when in pastor’s good graces; otherwise ignored &  & 0.52 & 0.02 & 1.11 & 1.08\\
-*EQ34 - Scripture used to justify physical punishment/severe discipline & spiritual violence & 0.53 & 0.02 & 1.21 & 1.17\\
-*IQ79 - Distrust of God & harmful God-image & 0.62 & 0.02 & 1.34 & 1.20\\
+EQ29 - Feeling special when in pastor’s good graces; otherwise ignored &  & 0.52 & 0.02 & 1.10 & 1.08\\
+*EQ34 - Scripture used to justify physical punishment/severe discipline & spiritual violence & 0.53 & 0.02 & 1.22 & 1.17\\
+*IQ79 - Distrust of God & harmful God-image & 0.62 & 0.02 & 1.34 & 1.21\\
 \addlinespace
-EQ53 - Scripture used to justify abusive parent-child behavior &  & 0.64 & 0.02 & 0.95 & 1.01\\
-*EQ51 - Extreme pressure to be pastor/missionary/spiritual leader & controlling leadership & 0.67 & 0.02 & 1.40 & 1.39\\
+EQ53 - Scripture used to justify abusive parent-child behavior &  & 0.64 & 0.02 & 0.96 & 1.01\\
+*EQ51 - Extreme pressure to be pastor/missionary/spiritual leader & controlling leadership & 0.67 & 0.02 & 1.42 & 1.38\\
 *EQ19 - Behavior excessively monitored by pastor/group & controlling leadership & 0.69 & 0.02 & 0.86 & 0.93\\
-EQ63 - Shamed by pastor/group for raising questions or concerns &  & 0.72 & 0.02 & 0.75 & 0.78\\
-EQ40 - Threatening Divine punishment to keep group members in line &  & 0.74 & 0.02 & 0.93 & 1.01\\
+EQ63 - Shamed by pastor/group for raising questions or concerns &  & 0.72 & 0.02 & 0.76 & 0.78\\
+EQ40 - Threatening Divine punishment to keep group members in line &  & 0.74 & 0.02 & 0.93 & 1.02\\
 \addlinespace
 *EQ28 - Leadershi/group protecting abusive individuals & maintain system & 0.76 & 0.02 & 0.92 & 0.90\\
-EQ64 - Witnessing women pressured to stay in unfaithful/abusive marriages &  & 0.77 & 0.02 & 1.00 & 0.99\\
-EQ50 - Treated as less than because of my gender & gender discrimination & 0.79 & 0.02 & 1.96 & 1.92\\
-*IQ82 - Having trouble navigating life outside my church/community & internal distress & 0.80 & 0.02 & 1.17 & 1.15\\
-EQ21 - Taught I would risk Hell if left my church/group &  & 0.83 & 0.02 & 1.32 & 1.39\\
+EQ64 - Witnessing women pressured to stay in unfaithful/abusive marriages &  & 0.77 & 0.02 & 1.01 & 1.00\\
+EQ50 - Treated as less than because of my gender & gender discrimination & 0.79 & 0.02 & 1.95 & 1.92\\
+*IQ82 - Having trouble navigating life outside my church/community & internal distress & 0.80 & 0.02 & 1.17 & 1.16\\
+EQ21 - Taught I would risk Hell if left my church/group &  & 0.83 & 0.02 & 1.30 & 1.39\\
 \addlinespace
-EQ59 - Pastor/group blame victim for their abuse &  & 0.87 & 0.02 & 0.75 & 0.81\\
-*EQ62 - Scripture used to justify physical violence & spiritual violence & 0.88 & 0.02 & 1.07 & 1.11\\
+EQ59 - Pastor/group blame victim for their abuse &  & 0.87 & 0.02 & 0.76 & 0.81\\
+*EQ62 - Scripture used to justify physical violence & spiritual violence & 0.88 & 0.02 & 1.08 & 1.11\\
 EQ20 - Members pressured to give money despite financial hardship &  & 0.88 & 0.02 & 1.14 & 1.27\\
 EQ57 - Developing mental/physical ailments from conforming to group/leader’s expectation &  & 0.89 & 0.02 & 0.94 & 1.08\\
 *EQ16 - Church/community abandoning me in difficult time & maintain system & 0.92 & 0.02 & 1.02 & 1.06\\
 \addlinespace
 EQ49 - Leadership/group protecting and elevating abusive individuals &  & 0.92 & 0.02 & 0.89 & 0.93\\
-*IQ70 - Feeling betrayed by God & harmful God-image & 0.95 & 0.02 & 1.39 & 1.26\\
+*IQ70 - Feeling betrayed by God & harmful God-image & 0.95 & 0.02 & 1.39 & 1.27\\
 *EQ52 - Blamed for harm I suffered rather than blaming who harmed me & maintain system & 0.98 & 0.02 & 0.80 & 0.89\\
-IQ68 - Anxiety attacks triggered by religious stimuli &  & 1.03 & 0.02 & 0.98 & 1.07\\
+IQ68 - Anxiety attacks triggered by religious stimuli &  & 1.03 & 0.02 & 0.99 & 1.06\\
 EQ30 - Deterred from seeking mental health treatment/counseling/medication &  & 1.03 & 0.02 & 0.95 & 1.03\\
 \addlinespace
 EQ43 - Shamed by pastor/group for poor spiritual/moral performance &  & 1.03 & 0.02 & 0.81 & 0.84\\
 *EQ31 - Shunned/ignored by pastor/church/group & maintain system & 1.04 & 0.02 & 1.13 & 1.09\\
-EQ23 - Prayer replacing needed medical interventions &  & 1.19 & 0.02 & 1.08 & 1.08\\
+EQ23 - Prayer replacing needed medical interventions &  & 1.19 & 0.02 & 1.06 & 1.08\\
 *EQ24 - Expected to consult pastor/leader before making non-religious decisions & controlling leadership & 1.24 & 0.02 & 1.02 & 1.08\\
 *EQ26 - Pressured to forgive abuser while abuse was ongoing & maintain system & 1.26 & 0.02 & 1.36 & 1.30\\
 \addlinespace
 EQ10 - Asked to give up personal goals by pastor &  & 1.32 & 0.02 & 1.11 & 1.19\\
-EQ65 - Cut off/shunned by more religious family members &  & 1.33 & 0.02 & 1.33 & 1.26\\
-IQ81 - Nightmares about my negative religious experiences &  & 1.42 & 0.02 & 0.89 & 0.97\\
-*IQ72 - Feeling as if God harmed me directly & harmful God-image & 1.64 & 0.02 & 1.14 & 1.21\\
-EQ47 - Medical care being postponed/withheld for religious reasons &  & 1.94 & 0.03 & 1.12 & 1.16\\*
+EQ65 - Cut off/shunned by more religious family members &  & 1.33 & 0.02 & 1.28 & 1.26\\
+IQ81 - Nightmares about my negative religious experiences &  & 1.42 & 0.02 & 0.90 & 0.97\\
+*IQ72 - Feeling as if God harmed me directly & harmful God-image & 1.64 & 0.02 & 1.13 & 1.22\\
+EQ47 - Medical care being postponed/withheld for religious reasons &  & 1.94 & 0.03 & 1.10 & 1.16\\*
+
 \end{longtable}
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-RSM-item-histogram-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-RSM-item-histogram-1.pdf}
 
 }
 
 \caption{\label{fig-RSM-item-histogram}Distribution of Item Severity
 Parameters}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{reliability}{%
-\subsection*{Reliability}\label{reliability}}
+\subsection*{Reliability}\label{reliability}
 \addcontentsline{toc}{subsection}{Reliability}
 
 The RSM expresses internal consistency reliability as Rasch person
@@ -1148,8 +1199,7 @@ The SHAS also has a high Rasch item separation reliability with Rel =
 .XX, χ2 (XX) = XXXX.X, p \textless{} .XX, implying that the items have a
 good spread in terms of item ordering and hierarchy.
 
-\hypertarget{item-person-map}{%
-\subsection*{Item-Person Map}\label{item-person-map}}
+\subsection*{Item-Person Map}\label{item-person-map}
 \addcontentsline{toc}{subsection}{Item-Person Map}
 
 Figure~\ref{fig-RSM-WrightMap} displays an item-person map (also called
@@ -1180,16 +1230,17 @@ least severe spiritual abuse is item XX, ``I would \ldots{}'', with −
 
 \begin{figure}
 
-{\centering \includegraphics{./results_files/figure-pdf/fig-RSM-WrightMap-1.pdf}
+\centering{
+
+\includegraphics{results_files/figure-pdf/fig-RSM-WrightMap-1.pdf}
 
 }
 
 \caption{\label{fig-RSM-WrightMap}Item-Person Map}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{model-data-fit}{%
-\subsection*{Model-Data Fit}\label{model-data-fit}}
+\subsection*{Model-Data Fit}\label{model-data-fit}
 \addcontentsline{toc}{subsection}{Model-Data Fit}
 
 To assess the overall fit of the RSM to the SHAS item response data, we
@@ -1206,15 +1257,16 @@ The obtained RMSEA value of .09 (95\% CI{[}.092, .093{]}) exceeds the
 cutoff of .06. The CFI of .953 meets the recommended .95 threshold.
 Together these statistics evidence that the RSM fits the SHAS items.
 
-\hypertarget{dif-analysis}{%
-\section*{DIF Analysis}\label{dif-analysis}}
+\section*{DIF Analysis}\label{dif-analysis}
 \addcontentsline{toc}{section}{DIF Analysis}
+
+\markright{DIF Analysis}
 
 Differential item functioning (DIF) examines how an item functions
 differently for people of equal standing on the trait. In this case, we
 conducted DIF analysis of the SHAS items to examine item bias by gender,
 and age, and race. {[}We applied logistic ordinal regression with IRT
-scoring. {[}We used the Chi-squared likelihood-ratio statistic as the
+scoring. We used the Chi-squared likelihood-ratio statistic as the
 initial DIF detection criteria (alpha \textless{} 0.01) and a cut-off of
 McFadden pseudo R2Δ ≥ 0.02 in model comparisons to determine substantial
 DIF, a reasonable threshold used in the development of self-reported
@@ -1290,9 +1342,10 @@ Figure 3: Bar Plot of Differences In Item Severity Between Subgroups
 
 \bookmarksetup{startatroot}
 
-\hypertarget{discussion}{%
-\chapter*{Discussion}\label{discussion}}
+\chapter*{Discussion}\label{discussion}
 \addcontentsline{toc}{chapter}{Discussion}
+
+\markboth{Discussion}{Discussion}
 
 The purpose of this study was to further validate and enhance the
 Spiritual Harm and Abuse Scale (SHAS) with the use of the Rasch Rating
@@ -1355,10 +1408,11 @@ revision or development of new items can also be considered to capture
 gradations of challenges at the very high and low ends of the continuum
 to detect people with very high and low levels of spiritual abuse.
 
-\hypertarget{implications-and-future-directions}{%
 \section*{Implications and future
-directions}\label{implications-and-future-directions}}
+directions}\label{implications-and-future-directions}
 \addcontentsline{toc}{section}{Implications and future directions}
+
+\markright{Implications and future directions}
 
 This study presents the validation of the SHAS using the Rasch
 measurement model, for assessing spiritual abuse in adults. The findings
@@ -1371,8 +1425,8 @@ levels of spiritual abuse. Hence, for now clinicians and researchers
 should be cautious when interpreting their results for people who have
 very high and low spiritual abuse levels.
 
-We echo the same limitations of these data noted in @KochEdstrom2022.
-The SHAS was developed on a largely white and Protestant/former
+We echo the same limitations of these data noted in Koch \& Edstrom
+(2022). The SHAS was developed on a largely white and Protestant/former
 Protestant population. Possibly major types or sub-themes of spiritual
 abuse not captured here are more prominent in other religious
 traditions. This would be a fruitful area of future study. Research into
@@ -1390,9 +1444,10 @@ perhaps the enduring power of religion, both to heal and to harm.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{data-availability}{%
-\chapter*{Data Availability}\label{data-availability}}
+\chapter*{Data Availability}\label{data-availability}
 \addcontentsline{toc}{chapter}{Data Availability}
+
+\markboth{Data Availability}{Data Availability}
 
 Data will be made available in accordance with xxx. Within one year of
 publication of manuscripts addressing the aims of the grant,
@@ -1401,18 +1456,20 @@ the public.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{code-availability}{%
-\chapter*{Code Availability}\label{code-availability}}
+\chapter*{Code Availability}\label{code-availability}
 \addcontentsline{toc}{chapter}{Code Availability}
 
-Code for the analyses presented in this paper will be made available
-upon request.
+\markboth{Code Availability}{Code Availability}
+
+Code for the analyses presented in this paper are available at
+https://github.com/jackbhuber/spiritual\_abuse.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{acknowledgments}{%
-\chapter*{Acknowledgments}\label{acknowledgments}}
+\chapter*{Acknowledgments}\label{acknowledgments}
 \addcontentsline{toc}{chapter}{Acknowledgments}
+
+\markboth{Acknowledgments}{Acknowledgments}
 
 This manuscript was not supported by grant funding. The views expressed
 in this article are those of the authors and do not necessarily reflect
@@ -1421,141 +1478,241 @@ University.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{funding}{%
-\chapter*{Funding}\label{funding}}
+\chapter*{Funding}\label{funding}
 \addcontentsline{toc}{chapter}{Funding}
+
+\markboth{Funding}{Funding}
 
 This research was not supported by grant funding.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{author-information}{%
-\chapter*{Author Information}\label{author-information}}
+\chapter*{Author Information}\label{author-information}
 \addcontentsline{toc}{chapter}{Author Information}
 
-\hypertarget{affiliations}{%
-\section*{Affiliations}\label{affiliations}}
+\markboth{Author Information}{Author Information}
+
+\section*{Affiliations}\label{affiliations}
 \addcontentsline{toc}{section}{Affiliations}
 
-\textbf{Department of Pharmacy, Swedish Medical Center, Seattle, USA}
+\markright{Affiliations}
 
-Jack Huber
+Jack Huber Department of Pharmacy, Swedish Medical Center, Seattle, USA
 
-\textbf{Department of Psychology, Northwest University, Kirkland, USA}
+Dan Koch Department of Psychology, Northwest University, Kirkland, USA
 
-Dan Koch
-
-\hypertarget{corresponding-author}{%
-\section*{Corresponding Author}\label{corresponding-author}}
+\section*{Corresponding Author}\label{corresponding-author}
 \addcontentsline{toc}{section}{Corresponding Author}
 
-Correspondence to \href{mailto:jack.bernard.huber@gmail.com}{Jack
-Huber}.
+\markright{Corresponding Author}
+
+Please direct correspondence to Jack Huber at
+\href{mailto:jack.bernard.huber@gmail.com}{\nolinkurl{jack.bernard.huber@gmail.com}}.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{ethics-declarations}{%
-\chapter*{Ethics Declarations}\label{ethics-declarations}}
+\chapter*{Ethics Declarations}\label{ethics-declarations}
 \addcontentsline{toc}{chapter}{Ethics Declarations}
 
-\hypertarget{conflict-of-interest}{%
-\section*{Conflict of Interest}\label{conflict-of-interest}}
+\markboth{Ethics Declarations}{Ethics Declarations}
+
+\section*{Conflict of Interest}\label{conflict-of-interest}
 \addcontentsline{toc}{section}{Conflict of Interest}
+
+\markright{Conflict of Interest}
 
 The authors declare no conflict of interest.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{references}{%
-\chapter*{References}\label{references}}
+\chapter*{References}\label{references}
 \addcontentsline{toc}{chapter}{References}
 
-\hypertarget{refs}{}
+\markboth{References}{References}
+
+\phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-Andrich1978}{}}%
-Andrich, David. 1978. {``A Rating Formulation for Ordered Response
-Categories.''} \emph{Psychometrika} 43: 561--73.
+\bibitem[\citeproctext]{ref-Andrich1978}
+Andrich, D. (1978). A rating formulation for ordered response
+categories. \emph{Psychometrika}, \emph{43}, 561--573.
 
-\leavevmode\vadjust pre{\hypertarget{ref-BondFox2015}{}}%
-Bond, Trevor G., and Christine M. Fox. 2015. \emph{Applying the Rasch
-Model: Fundamental Measurement in the Human Sciences}. New York, New
-York: Routledge.
+\bibitem[\citeproctext]{ref-BondFox2015}
+Bond, T. G., \& Fox, C. M. (2015). \emph{Applying the rasch model:
+Fundamental measurement in the human sciences}. Routledge.
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-mirt}{}}%
-Chalmers, Phil. 2022. \emph{Mirt: Multidimensional Item Response
-Theory}. \url{https://CRAN.R-project.org/package=mirt}.
+\bibitem[\citeproctext]{ref-Briere-1989}
+Briere, J., \& Runtz, M. (1989). The trauma symptom checklist (TSC-33):
+Early data on a new scale. \emph{Journal of Interpersonal Violence},
+\emph{4}(2), 151--163. \url{https://doi.org/10.1177/088626089004002002}
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-lordif}{}}%
-Choi, Seung W., with contributions from Laura E. Gibbons, and Paul K.
-Crane. 2016. \emph{Lordif: Logistic Ordinal Regression Differential Item
-Functioning Using IRT}. \url{https://CRAN.R-project.org/package=lordif}.
+\bibitem[\citeproctext]{ref-Carlson-2011}
+Carlson, E. B., Smith, S. R., Palmieri, P. A., Dalenberg, C. J., Ruzek,
+J. I., Kimerling, R., Burling, T. A., \& Spain, D. A. (2011).
+Development and validation of a brief self-report measure of trauma
+exposure: The trauma history screen. \emph{Psychological Assessment},
+\emph{23}, 463--477. \url{https://doi:10.1037/a0022294}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Yen1984}{}}%
-{``Effects of Local Item Dependence on the Fit and Equating Performance
-of the Three-Parameter Logistic Model.''} 1984. \emph{Applied
-Psychological Measurement} 8 (2): 125--45.
+\bibitem[\citeproctext]{ref-R-mirt}
+Chalmers, P. (2024). \emph{Mirt: Multidimensional item response theory}.
+\url{https://github.com/philchalmers/mirt}
 
-\leavevmode\vadjust pre{\hypertarget{ref-EmbretsonReise2000}{}}%
-Embretson, Susan E., and Steven P. Reise. 2000. \emph{Item Response
-Theory for Psychologists}. Mahwah, New Jerey: Lawrence Erlbaum
-Associates.
+\bibitem[\citeproctext]{ref-Doyle-2006}
+Doyle, T. P. (2006). Clericalism: Enabler of clergy sexual abuse.
+\emph{Pastoral Psychology}, \emph{54}, 189--213.
+\url{https://doi:10.1007/s11089-006-6323-x}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Keller2016}{}}%
-Keller, K. H. 2016. {``Development of a Spiritual Abuse
-Questionnaire.''} PhD thesis, Texas Woman's University.
+\bibitem[\citeproctext]{ref-Yen1984}
+Effects of local item dependence on the fit and equating performance of
+the three-parameter logistic model. (1984). \emph{Applied Psychological
+Measurement}, \emph{8}(2), 125--145.
 
-\leavevmode\vadjust pre{\hypertarget{ref-KochEdstrom2022}{}}%
-Koch, Dan, and Leihua Edstrom. 2022. {``Development of the Spiritual
-Harm and Abuse Scale.''} \emph{Journal for the Scientific Study of
-Religion}.
+\bibitem[\citeproctext]{ref-EmbretsonReise2000}
+Embretson, S. E., \& Reise, S. P. (2000). \emph{Item response theory for
+psychologists}. Lawrence Erlbaum Associates.
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-eRm}{}}%
-Mair, Patrick, Reinhold Hatzinger, and Marco J. Maier. 2021. \emph{eRm:
-Extended Rasch Modeling}. \url{https://CRAN.R-project.org/package=eRm}.
+\bibitem[\citeproctext]{ref-Foster-2015}
+Foster, K. A., Bowland, S. E., \& Vosler, A. N. (2015). All the pain
+along with all the joy: Spiritual resilience in lesbian and gay
+christians. \emph{American Journal of Community Psychology}, \emph{55},
+191--201. \url{https://doi:10.1007/s10464-015-9704-4}
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-base}{}}%
-R Core Team. 2022. \emph{R: A Language and Environment for Statistical
-Computing}. Vienna, Austria: R Foundation for Statistical Computing.
-\url{https://www.R-project.org/}.
+\bibitem[\citeproctext]{ref-Gubi-2009}
+Gubi, P. M., \& Jacobs, R. (2009). Exploring the impact on counsellors
+of working with spiritually abused clients. \emph{Mental Health,
+Religion \& Culture}, \emph{12}(2), 191--204.
+\url{https://doi:10.1080/13674670802441509}
 
-\leavevmode\vadjust pre{\hypertarget{ref-Rasch1960}{}}%
-Rasch, Georg. 1960. \emph{Probabilistic Models for Some Intelligence and
-Attainment Tests}. Chicago, IL: University of Chicago Press.
+\bibitem[\citeproctext]{ref-Keller2016}
+Keller, K. H. (2016). \emph{Development of a spiritual abuse
+questionnaire} {[}PhD thesis{]}. Texas Woman's University.
 
-\leavevmode\vadjust pre{\hypertarget{ref-Reckase1979}{}}%
-Reckase, Mark D. 1979. {``Unifactor Latent Trait Models Applied to
-Multifactor Tests: Results and Implications.''} \emph{Journal of
-Educational Statistics} 4: 207--30.
+\bibitem[\citeproctext]{ref-Kira-2008}
+Kira, I. A., Lewandowski, L., Templin, T., Ramaswamy, V., Ozkan, B., \&
+Mohanesh, J. (2008). Measuring cumulative trauma dose, types, and
+profiles using a development-based taxonomy of traumas.
+\emph{Traumatology}, \emph{14}(2), 62--87.
+\url{https://doi.org/10.1177/1534765608319324}
 
-\leavevmode\vadjust pre{\hypertarget{ref-ReiseBonifayHaviland2013}{}}%
-Reise, Steven P., Wes E. Bonifay, and Mark G. Haviland. 2013. {``Scoring
-and Modeling Psychological Measures in the Presence of
-Multidimensionality.''} \emph{Journal of Personality Assessment} 95 (2):
-129--40. \url{https://doi.org/10.1080/00223891.2012.725437}.
+\bibitem[\citeproctext]{ref-KochEdstrom2022}
+Koch, D., \& Edstrom, L. (2022). Development of the spiritual harm and
+abuse scale. \emph{Journal for the Scientific Study of Religion}.
 
-\leavevmode\vadjust pre{\hypertarget{ref-ReiseMooreHaviland2013}{}}%
-Reise, Steven P., Tyler M. Moore, and Mark G. Haviland. 2013.
-{``Applying Unidimensional Item Response Theory Models to Psychological
-Data.''} In \emph{APA Handbook of Testing and Assessment in Psychology:
-Vol. 1. Test Theory and Testing and Assessment in Industrial and
-Organizational Psychology}, 101--19.
+\bibitem[\citeproctext]{ref-Kvarfordt-2010}
+Kvarfordt, C. L. (2010). Spiritual abuse and neglect of youth:
+Reconceptualizing what is known through an investigation of
+practitioners' experiences. \emph{Journal of Religion \& Spirituality in
+Social Work: Social Thought}, \emph{29}(2), 143--164.
+\url{https://doi:10.1080/15426431003708287}
 
-\leavevmode\vadjust pre{\hypertarget{ref-ReiseWaller2009}{}}%
-Reise, Steven P., and Niels G. Waller. 2009. {``Item Response Theory and
-Clinical Measurement.''} \emph{Annual Review of Clinical Psychology} 5:
-27--48. \url{https://doi.org/10.1146/annurev.clinpsy.032408.153553}.
+\bibitem[\citeproctext]{ref-R-eRm}
+Mair, P., Rusch, T., Hatzinger, R., \& Maier, M. J. (2024). \emph{eRm:
+Extended rasch modeling}. \url{https://CRAN.R-project.org/package=eRm}
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-psych}{}}%
-Revelle, William. 2022. \emph{Psych: Procedures for Psychological,
-Psychometric, and Personality Research}.
-\href{https://personality-project.org/r/psych/\%0Ahttps://personality-project.org/r/psych-manual.pdf}{https://personality-project.org/r/psych/
-https://personality-project.org/r/psych-manual.pdf}.
+\bibitem[\citeproctext]{ref-Nobakht-2017}
+Nobakht, H. N., \& Dale, K. Y. (2017). The importance of
+religious/ritual abuse as a traumatic predictor of dissociation.
+\emph{Journal of Interpersonal Violence}, \emph{33}(23), 3575--3588.
+\url{https://doi:10.1177/0886260517723747}
 
-\leavevmode\vadjust pre{\hypertarget{ref-R-TAM}{}}%
-Robitzsch, Alexander, Thomas Kiefer, and Margaret Wu. 2022. \emph{TAM:
-Test Analysis Modules}. \url{https://CRAN.R-project.org/package=TAM}.
+\bibitem[\citeproctext]{ref-Oakley-2014}
+Oakley, L. R., \& Kinmond, K. S. (2014). Developing safeguarding policy
+and practice for spiritual abuse. \emph{The Journal of Adult
+Protection}, \emph{16}(2), 87--95.
+\url{https://doi:10.1108/jap-07-2013-0033}
+
+\bibitem[\citeproctext]{ref-Oakley-2018}
+Oakley, Lv., Kinmond, K., \& Humphreys, J. (2018). Spiritual abuse in
+christian faith settings: Definition, policy and practice guidance.
+\emph{The Journal of Adult Protection}, \emph{20}(3/4), 144--154.
+\url{https://doi:10.1108/jap-03-2018-0005}
+
+\bibitem[\citeproctext]{ref-Pearl-1994}
+Pearl, P. (1994). Emotional abuse. In J. A. Monteleone \& A. E. Brodeur
+(Eds.), \emph{Child maltreatment: A clinical guide and reference}. G.W.
+Medical Publisher.
+
+\bibitem[\citeproctext]{ref-R-base}
+R Core Team. (2024). \emph{R: A language and environment for statistical
+computing}. R Foundation for Statistical Computing.
+\url{https://www.R-project.org/}
+
+\bibitem[\citeproctext]{ref-Rasch1960}
+Rasch, G. (1960). \emph{Probabilistic models for some intelligence and
+attainment tests}. University of Chicago Press.
+
+\bibitem[\citeproctext]{ref-Reckase1979}
+Reckase, M. D. (1979). Unifactor latent trait models applied to
+multifactor tests: Results and implications. \emph{Journal of
+Educational Statistics}, \emph{4}, 207--230.
+
+\bibitem[\citeproctext]{ref-ReiseBonifayHaviland2013}
+Reise, S. P., Bonifay, W. E., \& Haviland, M. G. (2013). Scoring and
+modeling psychological measures in the presence of multidimensionality.
+\emph{Journal of Personality Assessment}, \emph{95}(2), 129--140.
+\url{https://doi.org/10.1080/00223891.2012.725437}
+
+\bibitem[\citeproctext]{ref-ReiseMooreHaviland2013}
+Reise, S. P., Moore, T. M., \& Haviland, M. G. (2013). Applying
+unidimensional item response theory models to psychological data. In
+\emph{APA handbook of testing and assessment in psychology: Vol. 1. Test
+theory and testing and assessment in industrial and organizational
+psychology} (pp. 101--119).
+
+\bibitem[\citeproctext]{ref-ReiseWaller2009}
+Reise, S. P., \& Waller, N. G. (2009). Item response theory and clinical
+measurement. \emph{Annual Review of Clinical Psychology}, \emph{5},
+27--48. \url{https://doi.org/10.1146/annurev.clinpsy.032408.153553}
+
+\bibitem[\citeproctext]{ref-R-psych}
+Revelle, W. (2024). \emph{Psych: Procedures for psychological,
+psychometric, and personality research}.
+\url{https://personality-project.org/r/psych/}
+
+\bibitem[\citeproctext]{ref-R-TAM}
+Robitzsch, A., Kiefer, T., \& Wu, M. (2024). \emph{TAM: Test analysis
+modules}. \url{http://www.edmeasurementsurveys.com/TAM/Tutorials/}
+
+\bibitem[\citeproctext]{ref-Rodruxedguez-Carballeira-2015}
+Rodríguez-Carballeira, A., Saldaña, O., Almendros, C., Martín-Peña, J.,
+Escartín, J., \& Porrúa-García, C. (2015). Group psychological abuse:
+Taxonomy and severity of its components. \emph{The European Journal of
+Psychology Applied to Legal Context}, \emph{7}(1), 31--39.
+\url{https://doi:10.1016/j.ejpal.2014.11.001}
+
+\bibitem[\citeproctext]{ref-Sanders-1995}
+Sanders, B., \& Becker-Lausen, E. (1995). The measurement of
+psychological maltreatment: Early data on the child abuse and trauma
+scale. \emph{Child Abuse \& Neglect}, \emph{19}(3), 315--323.
+\url{https://doi.org/10.1016/S0145-2134(94)00131-6}
+
+\bibitem[\citeproctext]{ref-Stevens-2019}
+Stevens, J. M., Arzoumanian, M. A., Greenbaum, B., Schwab, B. M., \&
+Dalenberg, C. J. (2019). Relationship of abuse by religious authorities
+to depression, religiosity, and child physical abuse history in a
+college sample. \emph{Psychological Trauma: Theory, Research, Practice,
+and Policy}, \emph{11}(3), 292--299.
+\href{https://doi:\%2010.1037/tra0000421}{https://doi:
+10.1037/tra0000421}
+
+\bibitem[\citeproctext]{ref-Swindle-2017}
+Swindle, P. J. (2017). \emph{A twisting of the sacred: The lived
+experience of religious abuse} {[}PhD thesis, University of North
+Carolina at Greensboro{]}.
+\url{https://libres.uncg.edu/ir/uncg/f/Swindle_uncg_0154D_12186.pdf}
+
+\bibitem[\citeproctext]{ref-Ward-2011}
+Ward, D. J. (2011). The lived experience of spiritual abuse.
+\emph{Mental Health, Religion \& Culture}, \emph{14}(9), 899--915.
+\url{https://doi:10.1080/13674676.2010.536206}
+
+\bibitem[\citeproctext]{ref-Winell-nd}
+Winell, M. (n.d.). \emph{Understanding religious trauma syndrome: Trauma
+from religion}. Retrieved at
+\url{https://legacy.babcp.com/Review/RTS-Trauma-from-Religion.aspx}
+(2020/11/29).
 
 \end{CSLReferences}
+
 
 
 
